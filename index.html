@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>جمع البيانات الجغرافية | منصة الدرس التفاعلية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --sand:#F7F1E5; --sand-2:#EFE4CD; --paper:#FFFDF8;
+  --teal-deep:#123B3D; --teal:#1D6B69; --teal-soft:#4E9C93; --teal-glow:rgba(29,107,105,.14);
+  --clay:#B14E2E; --clay-deep:#8B3B22;
+  --gold:#C0932F; --gold-soft:#E4C374;
+  --ink:#26211B; --ink-soft:#5B534A; --line:#DDD0AF; --white:#FFFFFF;
+  --ok:#3D8A57; --ok-bg:#E4F2E7; --bad:#BC4438; --bad-bg:#FBE7E3;
+  --shadow:0 10px 30px rgba(18,40,40,.10); --shadow-sm:0 4px 12px rgba(18,40,40,.08);
+  --radius:20px; --radius-sm:12px;
+  --sidebar-w:290px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{font-family:'Tajawal',sans-serif;background:var(--sand);color:var(--ink);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
+h1,h2,h3,h4{font-family:'Cairo',sans-serif;margin:0;color:var(--teal-deep);}
+p{line-height:1.9;margin:0 0 12px;}
+button{font-family:'Tajawal',sans-serif;cursor:pointer;}
+img,svg{display:block;}
+::selection{background:var(--gold-soft);}
+:focus-visible{outline:3px solid var(--teal-soft);outline-offset:2px;}
+.icon-16{width:16px;height:16px;flex:none;}
+.icon-18{width:18px;height:18px;flex:none;}
+.icon-22{width:22px;height:22px;flex:none;}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important;}}
+
+.bg-scene{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(1100px 550px at 85% -10%, rgba(192,147,47,.14), transparent 60%),
+  radial-gradient(900px 500px at -10% 110%, rgba(29,107,105,.16), transparent 60%),
+  var(--sand);}
+
+#masthead{background:var(--teal-deep);color:#fff;display:flex;align-items:center;justify-content:center;padding:9px 14px;box-shadow:0 2px 8px rgba(0,0,0,.15);position:relative;z-index:150;}
+#masthead .masthead-inner{display:flex;align-items:center;gap:8px;max-width:900px;text-align:center;flex-wrap:wrap;justify-content:center;font-size:12.5px;line-height:1.5;}
+#masthead b{font-weight:800;}
+#masthead svg{color:var(--gold-soft);flex:none;}
+@media (max-width:600px){#masthead{padding:8px 10px;} #masthead .masthead-inner{font-size:10.8px;}}
+
+/* ---------- sadu strip ---------- */
+.sadu{display:flex;height:14px;width:100%;overflow:hidden;}
+.sadu span{flex:1 0 14px;height:14px;clip-path:polygon(50% 0,100% 100%,0 100%);}
+.sadu span:nth-child(6n+1){background:var(--teal);} .sadu span:nth-child(6n+2){background:var(--gold);}
+.sadu span:nth-child(6n+3){background:var(--clay);} .sadu span:nth-child(6n+4){background:var(--teal-deep);}
+.sadu span:nth-child(6n+5){background:var(--gold-soft);} .sadu span:nth-child(6n+6){background:var(--teal-soft);}
+
+/* ============================================================
+   HOME SCREEN
+   ============================================================ */
+#home{min-height:100vh;display:none;flex-direction:column;justify-content:center;padding:44px 20px 30px;position:relative;}
+#home.active{display:flex;}
+.home-wrap{max-width:980px;margin:0 auto;width:100%;}
+.credit-line{text-align:center;font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+.credit-line b{color:var(--teal-deep);}
+.unit-eyebrow{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--clay-deep);font-weight:700;font-family:'Cairo';font-size:13.5px;margin-bottom:10px;}
+.unit-eyebrow .rule{width:30px;height:2px;background:var(--clay);border-radius:2px;}
+.home-title{text-align:center;font-size:clamp(32px,6vw,54px);font-weight:900;color:var(--teal-deep);line-height:1.15;margin-bottom:10px;}
+.home-title span{color:var(--clay);}
+.home-sub{text-align:center;color:var(--ink-soft);font-size:16.5px;max-width:600px;margin:0 auto 28px;}
+.stage-row{display:flex;align-items:flex-end;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:24px;}
+.home-speech{background:var(--paper);border:2px solid var(--line);border-radius:20px;padding:16px 20px;max-width:320px;box-shadow:var(--shadow-sm);font-size:14.5px;position:relative;}
+.home-speech::after{content:"";position:absolute;top:60%;left:-11px;transform:translateY(-50%);border:11px solid transparent;border-left:0;border-right-color:var(--paper);}
+.home-speech b{color:var(--teal);}
+.home-cta{display:flex;justify-content:center;margin-bottom:22px;}
+.overview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px;}
+@media (max-width:760px){.overview-grid{grid-template-columns:1fr;}}
+.ov-card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center;box-shadow:var(--shadow-sm);}
+.ov-card svg{width:28px;height:28px;color:var(--teal);margin:0 auto 8px;}
+.ov-card b{display:block;font-family:'Cairo';font-size:14px;color:var(--teal-deep);margin-bottom:4px;}
+.ov-card span{font-size:12.5px;color:var(--ink-soft);}
+.home-foot-credit{text-align:center;color:var(--ink-soft);font-size:12px;margin-top:26px;}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{border:none;border-radius:999px;font-family:'Cairo';font-weight:800;font-size:15.5px;padding:14px 30px;display:inline-flex;align-items:center;gap:9px;transition:transform .15s ease,box-shadow .15s ease;}
+.btn:active{transform:scale(.96);}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal-deep));color:#fff;box-shadow:0 10px 24px rgba(18,60,58,.30);}
+.btn-primary:hover{box-shadow:0 14px 28px rgba(18,60,58,.38);}
+.btn-clay{background:linear-gradient(135deg,var(--clay),var(--clay-deep));color:#fff;box-shadow:0 10px 22px rgba(139,59,34,.30);}
+.btn-ghost{background:transparent;color:var(--teal-deep);border:2px solid var(--line);}
+.btn-ghost:hover{border-color:var(--teal-soft);}
+.btn[disabled]{opacity:.4;pointer-events:none;}
+.btn-sm{padding:9px 18px;font-size:13.5px;border-radius:999px;}
+
+/* ============================================================
+   APP SHELL (sidebar + main)
+   ============================================================ */
+#app-shell{display:none;min-height:100vh;}
+#app-shell.active{display:flex;}
+.sidebar{
+  width:var(--sidebar-w);flex:none;background:var(--teal-deep);color:#fff;
+  position:sticky;top:0;height:100vh;overflow-y:auto;padding:20px 16px 30px;
+  display:flex;flex-direction:column;gap:6px;z-index:80;
+}
+.sidebar-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:0 4px;}
+.sidebar-head b{font-family:'Cairo';font-size:14px;display:block;}
+.sidebar-head small{font-size:10.5px;opacity:.7;display:block;}
+.sidebar-close{display:none;background:rgba(255,255,255,.12);border:none;border-radius:8px;color:#fff;padding:6px;margin-right:auto;}
+.side-points{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:14px;padding:10px 14px;margin:8px 0 14px;}
+.side-points svg{color:var(--gold-soft);width:18px;height:18px;}
+.side-points b{font-family:'Cairo';font-size:16px;}
+.side-progress{height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden;margin-bottom:16px;}
+.side-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--clay));border-radius:99px;transition:width .5s;}
+.side-nav{display:flex;flex-direction:column;gap:4px;}
+.side-item{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;background:transparent;
+  border:none;color:rgba(255,255,255,.82);text-align:right;font-size:13.5px;transition:background .15s;
+}
+.side-item:hover{background:rgba(255,255,255,.08);}
+.side-item.current{background:rgba(255,255,255,.16);color:#fff;font-weight:700;}
+.side-item .si-icon{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.10);display:flex;align-items:center;justify-content:center;flex:none;}
+.side-item.done .si-icon{background:var(--ok);}
+.side-item svg{width:16px;height:16px;}
+.side-item .si-tick{margin-right:auto;color:var(--gold-soft);width:15px;height:15px;flex:none;}
+.side-home-btn{margin-top:10px;border-top:1px solid rgba(255,255,255,.14);padding-top:14px;}
+
+.main-col{flex:1;min-width:0;}
+.topbar-mobile{display:none;position:sticky;top:0;z-index:60;background:var(--teal-deep);color:#fff;align-items:center;gap:12px;padding:10px 16px;}
+.topbar-mobile button{background:rgba(255,255,255,.14);border:none;color:#fff;border-radius:10px;padding:8px;}
+.topbar-mobile .tm-title{font-family:'Cairo';font-weight:700;font-size:14px;flex:1;}
+@media (max-width:900px){
+  .sidebar{position:fixed;right:0;top:0;transform:translateX(100%);transition:transform .3s ease;box-shadow:-10px 0 30px rgba(0,0,0,.25);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-close{display:inline-flex;}
+  .topbar-mobile{display:flex;}
+  #sidebar-scrim{content:"";position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:70;display:none;}
+  #sidebar-scrim.show{display:block;}
+}
+
+main{max-width:900px;margin:0 auto;padding:26px 24px 80px;}
+.stage{display:none;}
+.stage.active{display:block;animation:stagein .4s ease;}
+@keyframes stagein{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+
+/* ---------- stage head ---------- */
+.stage-head{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.stage-badge{width:54px;height:54px;border-radius:16px;flex:none;background:linear-gradient(145deg,var(--teal),var(--teal-deep));display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow-sm);}
+.stage-badge svg{width:27px;height:27px;}
+.stage-eyebrow{font-size:12px;color:var(--clay-deep);font-weight:700;margin-bottom:2px;}
+.stage-title{font-size:clamp(20px,3vw,27px);}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-sm);margin-bottom:18px;}
+
+/* ---------- definition ---------- */
+.definition-box{background:linear-gradient(135deg,var(--teal-deep),var(--teal));color:#fff;border-radius:var(--radius);padding:20px 24px;margin:16px 0;position:relative;overflow:hidden;}
+.definition-box::before{content:"";position:absolute;inset:0;opacity:.10;background-image:radial-gradient(circle at 20% 20%,#fff 0 2px,transparent 3px),radial-gradient(circle at 80% 70%,#fff 0 2px,transparent 3px);background-size:40px 40px;}
+.definition-box .tag{font-size:11.5px;font-weight:700;opacity:.85;margin-bottom:6px;font-family:'Cairo';}
+.definition-box p{font-size:16px;line-height:1.85;margin:0;position:relative;}
+
+/* ---------- callouts ---------- */
+.callout{border-radius:var(--radius-sm);padding:15px 18px;margin:14px 0;display:flex;gap:12px;align-items:flex-start;border:1px solid transparent;}
+.callout svg{width:21px;height:21px;flex:none;margin-top:2px;}
+.callout h4{font-size:14px;margin-bottom:4px;}
+.callout p{font-size:13.7px;margin:0;color:var(--ink-soft);}
+.callout-oman{background:#EAF3EC;border-color:#CBE3D0;} .callout-oman svg{color:var(--ok);} .callout-oman h4{color:#276B41;}
+.callout-law{background:#FBEFE7;border-color:#F0D6BF;} .callout-law svg{color:var(--clay);} .callout-law h4{color:var(--clay-deep);}
+.callout-values{background:#EFEAF6;border-color:#DAD0EE;} .callout-values svg{color:#6A4FA0;} .callout-values h4{color:#523A82;}
+.callout-why{margin-top:10px;}
+.why-toggle{background:none;border:1px dashed var(--ok);color:#276B41;border-radius:999px;padding:4px 12px;font-size:12px;font-family:'Cairo';font-weight:700;margin-top:6px;}
+.why-reveal{display:none;font-size:13px;margin-top:8px;color:#245735;background:rgba(255,255,255,.6);border-radius:8px;padding:8px 10px;}
+.why-reveal.show{display:block;}
+
+/* ---------- companions ---------- */
+.companion{display:flex;gap:14px;align-items:flex-start;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin:18px 0;box-shadow:var(--shadow-sm);}
+.companion .cwrap{flex:none;width:58px;position:relative;}
+.companion svg.charimg{width:58px;height:auto;animation:floaty 3.4s ease-in-out infinite;}
+.companion .txt{font-size:14px;color:var(--ink);align-self:center;}
+.companion .txt b{color:var(--teal);font-family:'Cairo';}
+.companion.salem .txt b{color:var(--clay-deep);}
+@keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.charimg .mouth{transform-origin:center;transition:transform .1s;}
+.talking .mouth{animation:talk .5s steps(2) infinite;}
+@keyframes talk{0%,100%{transform:scaleY(1);}50%{transform:scaleY(.35);}}
+
+/* mascot corner */
+#mascot-corner{position:fixed;bottom:18px;left:18px;z-index:120;width:64px;height:64px;pointer-events:none;filter:drop-shadow(0 8px 14px rgba(0,0,0,.22));}
+#mascot-corner svg{width:100%;height:100%;animation:hover 2.6s ease-in-out infinite;}
+@keyframes hover{0%,100%{transform:translateY(0) rotate(0);}50%{transform:translateY(-5px) rotate(-2deg);}}
+#mascot-corner.cheer svg{animation:cheerspin .7s ease;}
+@keyframes cheerspin{0%{transform:scale(1) rotate(0);}30%{transform:scale(1.25) rotate(-14deg);}60%{transform:scale(1.15) rotate(10deg);}100%{transform:scale(1) rotate(0);}}
+#mascot-corner.oops svg{animation:oopsshake .55s ease;}
+@keyframes oopsshake{0%,100%{transform:translateX(0) rotate(0);}25%{transform:translateX(-7px) rotate(-6deg);}75%{transform:translateX(7px) rotate(6deg);}}
+@media (max-width:900px){#mascot-corner{width:50px;height:50px;bottom:12px;left:12px;}}
+
+.burst{position:fixed;z-index:130;pointer-events:none;}
+.burst span{position:absolute;width:8px;height:8px;background:var(--gold);border-radius:2px;animation:burstfly .7s ease forwards;}
+@keyframes burstfly{to{transform:translate(var(--bx),var(--by)) rotate(180deg) scale(.3);opacity:0;}}
+
+/* ---------- flip cards ---------- */
+.grid{display:grid;gap:16px;margin:16px 0;}
+.grid-3{grid-template-columns:repeat(3,1fr);} .grid-2{grid-template-columns:repeat(2,1fr);}
+@media (max-width:760px){.grid-3,.grid-2{grid-template-columns:1fr;}}
+.flip{perspective:1200px;height:180px;}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d;cursor:pointer;}
+.flip.flipped .flip-inner{transform:rotateY(180deg);}
+.flip-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:7px;border:1px solid var(--line);}
+.flip-front{background:var(--paper);box-shadow:var(--shadow-sm);}
+.flip-front svg{width:32px;height:32px;color:var(--teal);}
+.flip-front b{font-family:'Cairo';font-size:14.5px;color:var(--teal-deep);}
+.flip-front .hint{font-size:11px;color:var(--ink-soft);opacity:.75;}
+.flip-back{background:linear-gradient(150deg,var(--teal),var(--teal-deep));color:#fff;transform:rotateY(180deg);font-size:13px;line-height:1.65;}
+.flip-back b{font-family:'Cairo';font-size:13.5px;display:block;margin-bottom:4px;}
+
+/* ---------- hotspot scenes ---------- */
+.hotspot-scene{position:relative;background:linear-gradient(180deg,#EAF2ED,#F7F1E5);border:1px solid var(--line);border-radius:var(--radius);padding:26px;margin:16px 0;min-height:220px;overflow:hidden;}
+.hotspot-scene .scene-illustration{display:flex;justify-content:space-around;align-items:flex-end;gap:20px;flex-wrap:wrap;}
+.hotspot-scene .scene-item{position:relative;text-align:center;}
+.hotspot-scene .scene-item svg.item-icon{width:64px;height:64px;color:var(--teal-deep);}
+.hotspot-scene .scene-item span.item-label{display:block;font-family:'Cairo';font-weight:700;font-size:12.5px;color:var(--teal-deep);margin-top:6px;}
+.hotspot-dot{
+  position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+  width:26px;height:26px;border-radius:50%;background:var(--clay);color:#fff;border:3px solid #fff;
+  display:flex;align-items:center;justify-content:center;font-family:'Cairo';font-weight:800;font-size:13px;
+  box-shadow:0 4px 10px rgba(0,0,0,.2);animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(177,78,46,.45);}50%{box-shadow:0 0 0 8px rgba(177,78,46,0);}}
+.hotspot-progress{margin-top:14px;font-size:13px;color:var(--ink-soft);text-align:center;}
+.hotspot-progress b{color:var(--teal-deep);}
+
+/* ---------- modal ---------- */
+#modal-overlay{position:fixed;inset:0;background:rgba(18,30,30,.55);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+#modal-overlay.show{display:flex;animation:fadein .2s ease;}
+@keyframes fadein{from{opacity:0;}to{opacity:1;}}
+.modal-box{background:var(--paper);border-radius:20px;max-width:440px;width:100%;padding:26px;box-shadow:0 20px 50px rgba(0,0,0,.3);position:relative;animation:popin .25s ease;}
+@keyframes popin{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-box .m-icon{width:46px;height:46px;border-radius:14px;background:linear-gradient(145deg,var(--teal),var(--teal-deep));color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.modal-box .m-icon svg{width:24px;height:24px;}
+.modal-box h4{font-size:17px;margin-bottom:8px;}
+.modal-box p{font-size:14.5px;color:var(--ink);margin:0;}
+.modal-close{position:absolute;top:14px;left:14px;background:var(--sand-2);border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);}
+.modal-close svg{width:15px;height:15px;}
+
+/* ---------- quiz ---------- */
+.quiz-box{background:var(--sand-2);border-radius:var(--radius);padding:20px 22px;margin-top:20px;border:1px solid var(--line);}
+.quiz-box .qtag{display:inline-flex;align-items:center;gap:6px;background:var(--teal-deep);color:#fff;font-family:'Cairo';font-weight:700;font-size:11.5px;padding:5px 12px;border-radius:999px;margin-bottom:10px;}
+.quiz-q{font-family:'Cairo';font-weight:700;font-size:16px;color:var(--teal-deep);margin-bottom:12px;}
+.opt-list{display:flex;flex-direction:column;gap:9px;}
+.opt{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:12px 15px;text-align:right;font-size:14px;display:flex;align-items:center;gap:10px;transition:all .15s;}
+.opt .bullet{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;font-family:'Cairo';font-size:11px;color:var(--ink-soft);}
+.opt:hover:not([disabled]){border-color:var(--teal-soft);}
+.opt.correct{background:var(--ok-bg);border-color:var(--ok);animation:pop .3s ease;}
+.opt.correct .bullet{background:var(--ok);color:#fff;border-color:var(--ok);}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad);animation:shake .35s;}
+.opt.wrong .bullet{background:var(--bad);color:#fff;border-color:var(--bad);}
+.opt[disabled]{cursor:default;}
+@keyframes pop{0%{transform:scale(1);}50%{transform:scale(1.02);}100%{transform:scale(1);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.feedback{margin-top:12px;padding:12px 15px;border-radius:12px;font-size:13.5px;display:none;gap:9px;align-items:flex-start;}
+.feedback.show{display:flex;}
+.feedback.ok{background:var(--ok-bg);color:#245735;} .feedback.bad{background:var(--bad-bg);color:#7C2D24;}
+.feedback svg{width:18px;height:18px;flex:none;margin-top:1px;}
+
+/* ---------- checkbox multiselect ---------- */
+.check-list{display:flex;flex-direction:column;gap:9px;}
+.check-opt{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:12px 15px;display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;transition:all .15s;}
+.check-opt input{display:none;}
+.check-opt .cbx{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;}
+.check-opt .cbx svg{width:13px;height:13px;color:#fff;opacity:0;}
+.check-opt.checked .cbx{background:var(--teal);border-color:var(--teal);}
+.check-opt.checked .cbx svg{opacity:1;}
+.check-opt.right{background:var(--ok-bg);border-color:var(--ok);}
+.check-opt.wrongsel{background:var(--bad-bg);border-color:var(--bad);}
+.check-opt.missed{border-color:var(--gold);}
+.check-opt[disabled], .check-opt.locked{pointer-events:none;}
+
+/* ---------- ordering ---------- */
+.order-list{display:flex;flex-direction:column;gap:10px;}
+.order-item{display:flex;align-items:center;gap:10px;background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:12px 15px;}
+.order-item .oi-num{width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-family:'Cairo';font-weight:800;font-size:12.5px;display:flex;align-items:center;justify-content:center;flex:none;}
+.order-item .oi-text{flex:1;font-size:14px;}
+.order-item .oi-arrows{display:flex;flex-direction:column;gap:3px;}
+.oi-btn{background:var(--sand-2);border:1px solid var(--line);border-radius:8px;width:26px;height:22px;display:flex;align-items:center;justify-content:center;color:var(--teal-deep);}
+.oi-btn svg{width:13px;height:13px;}
+.order-item.correct{border-color:var(--ok);background:var(--ok-bg);}
+.order-item.wrong{border-color:var(--bad);background:var(--bad-bg);}
+
+/* ---------- tray / drag / bins ---------- */
+.activity-box{background:linear-gradient(180deg,var(--paper),var(--sand-2));border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-top:20px;}
+.activity-box .atag{display:inline-flex;align-items:center;gap:6px;background:var(--clay);color:#fff;font-family:'Cairo';font-weight:700;font-size:11.5px;padding:5px 12px;border-radius:999px;margin-bottom:9px;}
+.activity-title{font-family:'Cairo';font-weight:700;font-size:15.5px;color:var(--teal-deep);margin-bottom:5px;}
+.activity-desc{font-size:13px;color:var(--ink-soft);margin-bottom:14px;}
+.tray{display:flex;flex-wrap:wrap;gap:10px;min-height:50px;margin-bottom:18px;padding:12px;background:rgba(255,255,255,.5);border-radius:14px;border:1px dashed var(--line);}
+.chip{background:#fff;border:2px solid var(--teal);color:var(--teal-deep);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;font-family:'Cairo';cursor:grab;user-select:none;touch-action:none;box-shadow:var(--shadow-sm);transition:opacity .15s;}
+.chip.placed{opacity:0;pointer-events:none;position:absolute;}
+.chip.ghost{position:fixed;z-index:999;pointer-events:none;box-shadow:0 12px 24px rgba(0,0,0,.22);cursor:grabbing;}
+.bins{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media (max-width:600px){.bins{grid-template-columns:1fr;}}
+.bin{border:2px dashed var(--line);border-radius:16px;padding:13px;min-height:130px;background:rgba(255,255,255,.4);transition:background .15s,border-color .15s;}
+.bin.hover{background:var(--teal-glow);border-color:var(--teal-soft);}
+.bin h5{font-family:'Cairo';font-size:13.5px;color:var(--teal-deep);margin-bottom:9px;display:flex;align-items:center;gap:7px;}
+.bin h5 svg{width:17px;height:17px;}
+.bin-drop{display:flex;flex-wrap:wrap;gap:7px;min-height:56px;}
+.bin-drop .chip{cursor:default;}
+.bin-drop .chip.correct-chip{border-color:var(--ok);background:var(--ok-bg);color:#245735;}
+.bin-drop .chip.wrong-chip{border-color:var(--bad);background:var(--bad-bg);color:#7C2D24;animation:shake .35s;}
+.activity-status{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:12.5px;color:var(--ink-soft);flex-wrap:wrap;gap:6px;}
+.activity-status b{color:var(--teal-deep);}
+
+/* ---------- matching ---------- */
+.match-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media (max-width:600px){.match-cols{grid-template-columns:1fr;}}
+.match-item{background:#fff;border:2px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:9px;font-size:13.3px;cursor:pointer;transition:all .15s;}
+.match-item.term{font-family:'Cairo';font-weight:700;color:var(--teal-deep);}
+.match-item.selected{border-color:var(--teal);background:var(--teal-glow);}
+.match-item.matched{border-color:var(--ok);background:var(--ok-bg);color:#245735;cursor:default;opacity:.85;}
+.match-item.wrong-flash{animation:shake .35s;border-color:var(--bad);}
+
+/* ---------- reveal cards (click to reveal) ---------- */
+.reveal-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+.reveal-q{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;}
+.reveal-q b{font-family:'Cairo';font-size:14px;color:var(--teal-deep);}
+.reveal-q svg{width:18px;height:18px;color:var(--teal);transition:transform .25s;flex:none;}
+.reveal-card.open .reveal-q svg{transform:rotate(45deg);}
+.reveal-a{max-height:0;overflow:hidden;transition:max-height .3s ease;font-size:13.5px;color:var(--ink-soft);}
+.reveal-card.open .reveal-a{max-height:200px;margin-top:8px;}
+
+/* ---------- comparison table ---------- */
+.compare-table{width:100%;border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;}
+.compare-table th,.compare-table td{padding:13px 14px;text-align:right;vertical-align:top;border-bottom:1px solid var(--line);}
+.compare-table thead th{background:var(--teal-deep);color:#fff;font-family:'Cairo';font-size:13.5px;position:sticky;top:0;}
+.compare-table thead th:first-child{border-top-right-radius:12px;}
+.compare-table thead th:last-child{border-top-left-radius:12px;}
+.compare-table tbody tr:hover{background:var(--teal-glow);}
+.compare-table td:first-child{font-family:'Cairo';font-weight:700;color:var(--clay-deep);background:var(--sand-2);white-space:nowrap;}
+.compare-wrap{overflow-x:auto;border-radius:16px;border:1px solid var(--line);}
+@media (max-width:700px){
+  .compare-table thead{display:none;}
+  .compare-table, .compare-table tbody, .compare-table tr, .compare-table td{display:block;width:100%;}
+  .compare-table tr{padding:12px 4px;border-bottom:2px solid var(--line);}
+  .compare-table td{border-bottom:none;padding:6px 10px;}
+  .compare-table td:first-child{background:none;color:var(--clay-deep);font-size:13px;padding-bottom:2px;}
+  .compare-table td:nth-child(2)::before{content:"🔹 المسح الأرضي: ";font-family:'Cairo';font-weight:700;color:var(--teal-deep);}
+  .compare-table td:nth-child(3)::before{content:"🔹 المسح الجوي والفضائي: ";font-family:'Cairo';font-weight:700;color:var(--teal-deep);}
+}
+
+/* ---------- map-style trail (overview stage) ---------- */
+.oman-map{position:relative;border-radius:var(--radius);overflow:hidden;background:linear-gradient(180deg,#DCEAE6 0%,#EFE4CD 55%,#E7D8B0 100%);border:1px solid var(--line);padding:26px 18px 10px;margin-bottom:10px;}
+.oman-map svg.terrain{position:absolute;inset:0;width:100%;height:100%;opacity:.5;}
+.map-stations{position:relative;display:flex;flex-direction:column;gap:16px;z-index:2;}
+.map-node{display:flex;align-items:center;gap:14px;background:rgba(255,253,248,.92);border:1px solid var(--line);border-radius:16px;padding:12px 15px;box-shadow:var(--shadow-sm);cursor:pointer;transition:transform .15s;}
+.map-node:hover{transform:translateX(-4px);}
+.map-node.done{border-right:5px solid var(--ok);}
+.map-node .mn-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(145deg,var(--teal),var(--teal-deep));display:flex;align-items:center;justify-content:center;color:#fff;flex:none;}
+.map-node.done .mn-icon{background:linear-gradient(145deg,var(--ok),#2B6E42);}
+.map-node .mn-icon svg{width:21px;height:21px;}
+.map-node .mn-text{flex:1;min-width:0;}
+.map-node .mn-num{font-size:10.5px;color:var(--ink-soft);font-weight:700;}
+.map-node .mn-name{font-family:'Cairo';font-weight:700;font-size:14px;color:var(--teal-deep);}
+.map-node .mn-status svg{width:19px;height:19px;color:var(--ok);}
+
+/* ---------- results ---------- */
+.result-wrap{text-align:center;padding:20px 0;}
+.badge-ring{width:170px;height:170px;border-radius:50%;margin:0 auto 18px;background:conic-gradient(var(--gold) calc(var(--pct)*1%), var(--sand-2) 0);display:flex;align-items:center;justify-content:center;position:relative;}
+.badge-ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--paper);box-shadow:inset 0 0 0 1px var(--line);}
+.badge-inner{position:relative;text-align:center;}
+.badge-inner svg{width:44px;height:44px;color:var(--gold);margin:0 auto 4px;}
+.badge-inner b{display:block;font-family:'Cairo';font-size:24px;color:var(--teal-deep);}
+.badge-inner span{font-size:11.5px;color:var(--ink-soft);}
+.result-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:6px;}
+.next-lesson-card{margin-top:28px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;gap:16px;align-items:center;text-align:right;box-shadow:var(--shadow-sm);}
+.next-lesson-card .nl-icon{width:54px;height:54px;border-radius:16px;flex:none;background:linear-gradient(145deg,var(--clay),var(--clay-deep));display:flex;align-items:center;justify-content:center;color:#fff;}
+.next-lesson-card .nl-icon svg{width:26px;height:26px;}
+@media (max-width:600px){.next-lesson-card{flex-direction:column;text-align:center;}}
+
+/* ---------- nav row ---------- */
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:26px;padding-top:16px;border-top:1px dashed var(--line);}
+.nav-row .spacer{flex:1;}
+.recall-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+
+.goal-list{display:flex;flex-direction:column;gap:11px;margin-top:16px;}
+.goal-item{display:flex;gap:13px;align-items:flex-start;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:13px 15px;cursor:pointer;box-shadow:var(--shadow-sm);}
+.goal-check{width:25px;height:25px;border-radius:50%;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.goal-item.done .goal-check{background:var(--ok);border-color:var(--ok);}
+.goal-check svg{width:13px;height:13px;color:#fff;opacity:0;transition:opacity .15s;}
+.goal-item.done .goal-check svg{opacity:1;}
+.goal-item p{margin:0;font-size:14px;}
+.goal-item.done{border-color:#CBE3D0;}
+
+.poll-row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 6px;}
+.poll-chip{background:#fff;border:2px solid var(--line);border-radius:999px;padding:9px 20px;font-family:'Cairo';font-weight:700;font-size:13.5px;color:var(--teal-deep);transition:all .15s;}
+.poll-chip:hover{border-color:var(--teal-soft);}
+.poll-chip.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+.poll-reveal{display:none;margin-top:10px;font-size:13.5px;color:var(--ink-soft);background:var(--sand-2);border-radius:12px;padding:11px 15px;}
+.poll-reveal.show{display:block;}
+
+.foot-credit{text-align:center;color:var(--ink-soft);font-size:12px;margin:40px 0 4px;}
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<header id="masthead">
+  <div class="masthead-inner">
+    <svg class="icon-16"><use href="#ic-book"/></svg>
+    <span>إعداد: <b>أ. عهود العبرية</b> — معلمة الدراسات الاجتماعية — مدرسة وادي غول للتعليم الأساسي (٥-٩)</span>
+  </div>
+</header>
+
+<div class="bg-scene"></div>
+
+<!-- ============================================================
+     SVG SYMBOLS
+     ============================================================ -->
+<svg width="0" height="0" style="position:absolute">
+<defs>
+  <symbol id="ic-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M15.2 8.8 12.9 13l-4.1 2.2 2.3-4.2z"/></symbol>
+  <symbol id="ic-mappin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.4 7-11.5A7 7 0 1 0 5 9.5C5 14.6 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></symbol>
+  <symbol id="ic-ruler" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="6" rx="1.4"/><path d="M6 9v3M9 9v2M12 9v3M15 9v2M18 9v3"/></symbol>
+  <symbol id="ic-tripod" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><path d="M12 10v4M12 14l-5 7M12 14l5 7M9 21h6"/></symbol>
+  <symbol id="ic-satellite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="6" height="6" rx="1" transform="rotate(45 12 12)"/><path d="M4 4l3 3M20 4l-3 3M4 20l3-3M9 15l-4 4M12 4v3"/></symbol>
+  <symbol id="ic-drone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9.3" y="10.3" width="5.4" height="3.4" rx="1"/><path d="M9 10 5 6M15 10l4-4M9 14l-4 4M15 14l4 4"/><circle cx="4.3" cy="4.8" r="1.6"/><circle cx="19.7" cy="4.8" r="1.6"/><circle cx="4.3" cy="19.2" r="1.6"/><circle cx="19.7" cy="19.2" r="1.6"/></symbol>
+  <symbol id="ic-balloon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="9" rx="6" ry="7"/><path d="M9.5 15.5 8 20h8l-1.5-4.5"/><path d="M12 16v-1"/></symbol>
+  <symbol id="ic-radar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><path d="M12 3v2M21 12h-2M12 21v-2M3 12h2"/></symbol>
+  <symbol id="ic-chip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></symbol>
+  <symbol id="ic-star" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.5 1.3 6.5L12 17.2l-5.9 3.2 1.3-6.5-4.9-4.5 6.6-.8z"/></symbol>
+  <symbol id="ic-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4a3 3 0 0 0 3 4M17 5h3a3 3 0 0 1-3 4"/><path d="M12 14v3M8 21h8M9 21c0-1.7.9-2.6 3-2.6s3 .9 3 2.6"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></symbol>
+  <symbol id="ic-checkcircle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M7.5 12.5 10.5 15.5 16.5 9"/></symbol>
+  <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="ic-arrow-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="ic-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></symbol>
+  <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4.2"/></symbol>
+  <symbol id="ic-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-9.5-9.3C1.2 7.4 3 4.5 6.2 4.2c2-.2 3.5 1 5.8 3.3 2.3-2.3 3.8-3.5 5.8-3.3 3.2.3 5 3.2 3.7 6.5C19.5 15.4 12 20 12 20z"/></symbol>
+  <symbol id="ic-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="ic-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5c3 2 4.5 5.5 4 10l-4 4-4-4c-.5-4.5 1-8 4-10z"/><circle cx="12" cy="10" r="1.7"/><path d="M8.5 14.5 6 17l1 3 3-1M15.5 14.5 18 17l-1 3-3-1"/></symbol>
+  <symbol id="ic-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5c2.5-1.3 5-1.3 8 0v14c-3-1.3-5.5-1.3-8 0z"/><path d="M20 5.5c-2.5-1.3-5-1.3-8 0v14c3-1.3 5.5-1.3 8 0z"/></symbol>
+  <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="ic-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+
+  <!-- character: Mia -->
+  <symbol id="char-mia" viewBox="0 0 220 270">
+    <ellipse cx="110" cy="252" rx="58" ry="10" fill="#123B3D" opacity=".08"/>
+    <path d="M62 158c0-16 12-24 24-27l24-6 24 6c12 3 24 11 24 27l10 84c2 10-4 16-14 16H66c-10 0-16-6-14-16z" fill="#1D6B69"/>
+    <path d="M62 158c0-16 12-24 24-27l24-6 24 6c12 3 24 11 24 27l3 24H59z" fill="#123B3D"/>
+    <g fill="#C0932F"><path d="M70 240l6-8 6 8z"/><path d="M84 240l6-8 6 8z"/><path d="M98 240l6-8 6 8z"/><path d="M112 240l6-8 6 8z"/><path d="M126 240l6-8 6 8z"/><path d="M140 240l6-8 6 8z"/><path d="M154 240l6-8 6 8z"/></g>
+    <rect x="118" y="150" width="44" height="34" rx="4" fill="#0F2E30" transform="rotate(8 140 167)"/>
+    <rect x="122" y="154" width="36" height="24" rx="2" fill="#E9F4F2" transform="rotate(8 140 167)"/>
+    <path d="M131 168l6-6 5 4 8-9" transform="rotate(8 140 167)" stroke="#1D6B69" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M86 140c-14 6-22 18-24 32" stroke="#1D6B69" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <path d="M134 140c12 4 22 12 26 22" stroke="#1D6B69" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <circle cx="60" cy="176" r="9" fill="#E9B98A"/>
+    <rect x="100" y="112" width="20" height="18" rx="6" fill="#E9B98A"/>
+    <path d="M56 92c0 40 4 62 14 78l16-8c-8-16-10-34-10-62z" fill="#123B3D"/>
+    <path d="M164 92c0 40-4 62-14 78l-16-8c8-16 10-34 10-62z" fill="#123B3D"/>
+    <circle cx="110" cy="88" r="38" fill="#F0C29A"/>
+    <path d="M72 88c0-24 17-44 38-44s38 20 38 44c0 6-1 12-3 17-4-16-6-19-6-19s-8 8-29 8-29-8-29-8-2 3-6 19c-2-5-3-11-3-17z" fill="#1D6B69"/>
+    <path d="M72 88c0-24 17-44 38-44s38 20 38 44" fill="none" stroke="#123B3D" stroke-width="3"/>
+    <path d="M78 100c10 6 22 9 32 9s22-3 32-9" fill="none" stroke="#C0932F" stroke-width="3" stroke-linecap="round"/>
+    <ellipse cx="98" cy="90" rx="3.2" ry="4.2" fill="#2A2118"/>
+    <ellipse cx="123" cy="90" rx="3.2" ry="4.2" fill="#2A2118"/>
+    <path d="M92 80c3-3 8-3 11-1M116 79c3-2 8-2 11 1" stroke="#6B4A2E" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path class="mouth" d="M100 103c5 5 14 5 19 0" stroke="#8A4A2E" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <circle cx="86" cy="98" r="5" fill="#E58A6B" opacity=".45"/>
+    <circle cx="135" cy="98" r="5" fill="#E58A6B" opacity=".45"/>
+  </symbol>
+
+  <!-- character: Salem (boy, dishdasha + kuma) -->
+  <symbol id="char-salem" viewBox="0 0 220 270">
+    <ellipse cx="110" cy="252" rx="58" ry="10" fill="#123B3D" opacity=".08"/>
+    <path d="M64 150c0-14 10-20 20-23l26-7 26 7c10 3 20 9 20 23l12 92c2 10-4 16-14 16H66c-10 0-16-6-14-16z" fill="#F4EFE3"/>
+    <path d="M64 150c0-14 10-20 20-23l26-7 26 7c10 3 20 9 20 23l4 26H61z" fill="#E7DEC8"/>
+    <path d="M110 120v96" stroke="#D8CDAE" stroke-width="3"/>
+    <g fill="#B14E2E" opacity=".85"><path d="M74 236l6-7 6 7z"/><path d="M88 236l6-7 6 7z"/><path d="M102 236l6-7 6 7z"/><path d="M116 236l6-7 6 7z"/><path d="M130 236l6-7 6 7z"/><path d="M144 236l6-7 6 7z"/></g>
+    <path d="M84 132c-13 6-20 17-22 30" stroke="#F4EFE3" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <path d="M136 132c12 5 20 13 24 24" stroke="#F4EFE3" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <circle cx="60" cy="164" r="9" fill="#D89A6A"/>
+    <circle cx="162" cy="158" r="9" fill="#D89A6A"/>
+    <rect x="99" y="108" width="22" height="18" rx="6" fill="#D89A6A"/>
+    <circle cx="110" cy="82" r="36" fill="#E8B489"/>
+    <path d="M74 78c0-22 16-38 36-38s36 16 36 38c0 3 0 7-1 10-6-10-10-13-10-13s-8 7-25 7-25-7-25-7-4 3-10 13c-1-3-1-7-1-10z" fill="#123B3D"/>
+    <path d="M74 78c0-22 16-38 36-38s36 16 36 38" fill="none" stroke="#0B2224" stroke-width="3"/>
+    <path d="M78 60c8-14 24-22 32-22s24 8 32 22" fill="none" stroke="#C0932F" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>
+    <ellipse cx="99" cy="86" rx="3" ry="4" fill="#2A2118"/>
+    <ellipse cx="122" cy="86" rx="3" ry="4" fill="#2A2118"/>
+    <path d="M93 76c3-2 7-2 10 0M113 76c3-2 7-2 10 0" stroke="#5C3A22" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path class="mouth" d="M100 98c4 4 12 4 16 0" stroke="#7A4425" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <rect x="90" y="150" width="44" height="32" rx="4" fill="#123B3D" transform="rotate(-6 112 166)"/>
+    <rect x="94" y="154" width="36" height="22" rx="2" fill="#E9F4F2" transform="rotate(-6 112 166)"/>
+    <circle cx="108" cy="167" r="7" fill="none" stroke="#1D6B69" stroke-width="2" transform="rotate(-6 112 166)"/>
+  </symbol>
+
+  <!-- mascot: drone -->
+  <symbol id="mascot-drone" viewBox="0 0 160 140">
+    <g stroke="#123B3D" stroke-width="3" stroke-linecap="round"><path d="M40 40 18 20M120 40l22-20M40 92l-22 20M120 92l22 20"/></g>
+    <circle cx="15" cy="16" r="9" fill="#E4C374" stroke="#123B3D" stroke-width="3"/>
+    <circle cx="145" cy="16" r="9" fill="#E4C374" stroke="#123B3D" stroke-width="3"/>
+    <circle cx="15" cy="116" r="9" fill="#E4C374" stroke="#123B3D" stroke-width="3"/>
+    <circle cx="145" cy="116" r="9" fill="#E4C374" stroke="#123B3D" stroke-width="3"/>
+    <rect x="38" y="42" width="84" height="50" rx="18" fill="#1D6B69" stroke="#123B3D" stroke-width="3"/>
+    <circle cx="80" cy="66" r="15" fill="#0F2E30"/>
+    <circle cx="80" cy="66" r="9" fill="#E9F4F2"/>
+    <circle cx="83" cy="63" r="3" fill="#1D6B69"/>
+    <path d="M68 84c6 5 18 5 24 0" stroke="#E9F4F2" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- decorative terrain for map stage -->
+  <symbol id="terrain-oman" viewBox="0 0 400 260" preserveAspectRatio="none">
+    <path d="M0 90 40 40 80 100 120 20 170 95 210 55 260 100 300 60 340 100 400 70V0H0z" fill="#B9CFC6"/>
+    <path d="M0 130 60 95 130 140 190 100 260 145 330 105 400 130V260H0z" fill="#D9CBA0" opacity=".8"/>
+  </symbol>
+</defs>
+</svg>
+
+<!-- ============================================================
+     HOME
+     ============================================================ -->
+<section id="home" class="active">
+  <div class="home-wrap">
+    <div class="unit-eyebrow"><span class="rule"></span> الوحدة الأولى: البيانات الجغرافية، معالجتها وتطبيقاتها <span class="rule"></span></div>
+    <h1 class="home-title">جَمْعُ البَيانات <span>الجُغرافيّة</span></h1>
+    <p class="home-sub">منصّة تعليمية تفاعلية للدرس الأول، تعتمد على محتوى الكتاب المدرسي بالكامل، وترافقكِ فيها شخصيتان عُمانيتان عبر رحلة من الاستكشاف والأنشطة والتحدي الختامي.</p>
+
+    <div class="stage-row">
+      <svg style="width:170px" class="charimg"><use href="#char-mia"/></svg>
+      <div class="home-speech"><b>ميّة:</b> أهلًا بك! أنا ميّة، وسيرافقنا أيضًا <b>سالم</b> في محطات التقنية. هل أنت مستعد لرحلة معرفية حقيقية؟</div>
+      <svg style="width:150px" class="charimg"><use href="#char-salem"/></svg>
+    </div>
+
+    <div class="home-cta">
+      <button class="btn btn-primary" onclick="enterApp()">ادخلي إلى الدرس <svg class="icon-22"><use href="#ic-arrow-l"/></svg></button>
+    </div>
+
+    <div class="overview-grid">
+      <div class="ov-card"><svg><use href="#ic-mappin"/></svg><b>مفهوم وأهمية</b><span>البيانات الجغرافية وأساس الخرائط الذكية</span></div>
+      <div class="ov-card"><svg><use href="#ic-radar"/></svg><b>مصادر الجمع</b><span>المسح الأرضي، والمسح الجوّي والفضائي</span></div>
+      <div class="ov-card"><svg><use href="#ic-rocket"/></svg><b>عُمان والتقنية</b><span>الذكاء الاصطناعي، وإنجازات عُمان الفضائية</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     APP SHELL
+     ============================================================ -->
+<div id="sidebar-scrim" onclick="toggleSidebar(false)"></div>
+<div id="app-shell">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div><b>جمع البيانات الجغرافية</b><small>الوحدة الأولى · الدرس الأول</small></div>
+      <button class="sidebar-close" onclick="toggleSidebar(false)"><svg class="icon-18"><use href="#ic-x"/></svg></button>
+    </div>
+    <div class="side-points"><svg><use href="#ic-star"/></svg><span>النقاط:</span> <b id="sidePoints">0</b></div>
+    <div class="side-progress"><div class="side-progress-fill" id="sideProgressFill" style="width:0%"></div></div>
+    <div class="side-nav" id="sideNav"><!-- injected --></div>
+    <button class="side-item side-home-btn" onclick="goHome()"><span class="si-icon"><svg><use href="#ic-home"/></svg></span> الصفحة الرئيسية</button>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar-mobile">
+      <button onclick="toggleSidebar(true)"><svg class="icon-18"><use href="#ic-menu"/></svg></button>
+      <div class="tm-title">جمع البيانات الجغرافية</div>
+      <div style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border-radius:999px;padding:5px 12px;font-family:Cairo;font-weight:700;font-size:12.5px">
+        <svg class="icon-16"><use href="#ic-star"/></svg><span id="sidePointsMobile">0</span>
+      </div>
+    </div>
+
+    <main>
+
+    <!-- ============ STAGE: OVERVIEW MAP ============ -->
+    <section class="stage active" id="stage-overview" data-stage="overview">
+      <div class="stage-head">
+        <div class="stage-badge"><svg><use href="#ic-mappin"/></svg></div>
+        <div><div class="stage-eyebrow">خريطة الرحلة</div><h3 class="stage-title">مسار درسنا التفاعلي</h3></div>
+      </div>
+      <div class="companion"><div class="cwrap"><svg class="charimg"><use href="#char-mia"/></svg></div>
+        <div class="txt"><b>ميّة:</b> هذه خريطة رحلتنا عبر الدرس. اضغط على أي محطة في القائمة الجانبية أو هنا في أي وقت — لا حاجة لإكمالها بالترتيب!</div>
+      </div>
+      <div class="oman-map">
+        <svg class="terrain" viewBox="0 0 400 260" preserveAspectRatio="none"><use href="#terrain-oman"/></svg>
+        <div class="map-stations" id="mapStations"><!-- injected --></div>
+      </div>
+    </section>
+
+    <!-- ============ STAGE: GOALS ============ -->
+    <section class="stage" id="stage-goals" data-stage="goals">
+      <div class="stage-head"><div class="stage-badge"><svg><use href="#ic-compass"/></svg></div>
+        <div><div class="stage-eyebrow">المحطة الأولى</div><h3 class="stage-title">أهداف الدرس</h3></div></div>
+      <div class="card">
+        <p>بنهاية دراسة هذا الدرس، يُتوقَّع منك أن:</p>
+        <div class="goal-list" id="goalsList">
+          <div class="goal-item" data-goal="1"><div class="goal-check"><svg><use href="#ic-check"/></svg></div><p>تتعرّف مفهوم البيانات الجغرافية.</p></div>
+          <div class="goal-item" data-goal="2"><div class="goal-check"><svg><use href="#ic-check"/></svg></div><p>تناقش أهمية البيانات الجغرافية في إدارة الأزمات والكوارث.</p></div>
+          <div class="goal-item" data-goal="3"><div class="goal-check"><svg><use href="#ic-check"/></svg></div><p>تقارن بين طرُق جمع البيانات الجغرافية باستخدام المَسْح الأرضي والجوّي.</p></div>
+          <div class="goal-item" data-goal="4"><div class="goal-check"><svg><use href="#ic-check"/></svg></div><p>تعي القوانين والتشريعات التي تُنظِّم عملية جمع البيانات الجغرافية.</p></div>
+          <div class="goal-item" data-goal="5"><div class="goal-check"><svg><use href="#ic-check"/></svg></div><p>تُبيّن دور الذكاء الاصطناعي في تطوير دقة وكفاءة المَسْح الأرضي والجوّي وتقنيات الاستشعار عن بُعد.</p></div>
+          <div class="goal-item" data-goal="6"><div class="goal-check"><svg><use href="#ic-check"/></svg></div><p>تُقدِّر جهود سلطنة عُمان في استخدام التقنيات الحديثة في جمع البيانات الجغرافية.</p></div>
+        </div>
+      </div>
+      <div class="companion"><div class="cwrap"><svg class="charimg"><use href="#char-mia"/></svg></div>
+        <div class="txt"><b>ميّة:</b> اضغط على كل هدف لتؤكّد اطّلاعك عليه.</div></div>
+      <div class="nav-row"><span></span><div class="spacer"></div>
+        <button class="btn btn-primary" id="goalsNextBtn" disabled onclick="goStage('concept')">التالي <svg class="icon-18"><use href="#ic-arrow-l"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ============ STAGE: CONCEPT ============ -->
+    <section class="stage" id="stage-concept" data-stage="concept">
+      <div class="stage-head"><div class="stage-badge"><svg><use href="#ic-mappin"/></svg></div>
+        <div><div class="stage-eyebrow">المحطة الثانية</div><h3 class="stage-title">مفهوم البيانات الجغرافية وأهميتها</h3></div></div>
+      <div class="card">
+        <p>تُشكِّل البيانات الجغرافية أساس الخرائط والتطبيقات المكانية الذكية التي نستخدمها في حياتنا اليومية.</p>
+        <div class="definition-box"><div class="tag">التعريف</div>
+          <p>البيانات الجغرافية: توضيحٌ لمواقع الظواهر الجغرافية الطبيعية والبشرية، وشكلها، وخصائصها.</p>
+        </div>
+        <p style="margin-top:14px">وتتمثّل أهمية البيانات الجغرافية في الآتي — اضغط على كل بطاقة لاستكشافها:</p>
+        <div class="grid grid-3">
+          <div class="flip" data-flip><div class="flip-inner">
+            <div class="flip-face flip-front"><svg><use href="#ic-shield"/></svg><b>إدارة الأزمات والكوارث</b><span class="hint">اضغط للمزيد</span></div>
+            <div class="flip-face flip-back"><b>من نص الدرس</b>تُستخدم البيانات الجغرافية الدقيقة في إدارة الأزمات والكوارث، لتحديد المناطق المتضررة وتوجيه جهود الاستجابة.</div>
+          </div></div>
+          <div class="flip" data-flip><div class="flip-inner">
+            <div class="flip-face flip-front"><svg><use href="#ic-mappin"/></svg><b>تخطيط المُدن وتنظيمها</b><span class="hint">اضغط للمزيد</span></div>
+            <div class="flip-face flip-back"><b>من نص الدرس</b>تُستخدم في تخطيط المدن وتنظيمها، بما يخدم النمو العمراني المدروس.</div>
+          </div></div>
+          <div class="flip" data-flip><div class="flip-inner">
+            <div class="flip-face flip-front"><svg><use href="#ic-checkcircle"/></svg><b>اتخاذ قرارات دقيقة</b><span class="hint">اضغط للمزيد</span></div>
+            <div class="flip-face flip-back"><b>من نص الدرس</b>تتيح اتخاذ قرارات مبنيّة على بيانات جغرافية دقيقة.</div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="activity-box">
+        <span class="atag"><svg class="icon-16" style="color:#fff"><use href="#ic-checkcircle"/></svg> نشاط اختيار متعدد (اختيار عدة إجابات)</span>
+        <div class="activity-title">اختر كل العبارات الصحيحة</div>
+        <div class="activity-desc">وفق ما ورد في الدرس، أيّ العبارات التالية تُمثّل فعلًا من أهمية البيانات الجغرافية؟ (أكثر من إجابة صحيحة)</div>
+        <div class="check-list" id="msImportance">
+          <label class="check-opt" data-correct="1"><input type="checkbox"><span class="cbx"><svg><use href="#ic-check"/></svg></span> إدارة الأزمات والكوارث</label>
+          <label class="check-opt" data-correct="1"><input type="checkbox"><span class="cbx"><svg><use href="#ic-check"/></svg></span> تخطيط المدن وتنظيمها</label>
+          <label class="check-opt" data-correct="0"><input type="checkbox"><span class="cbx"><svg><use href="#ic-check"/></svg></span> تحديد أسعار العقارات تلقائيًا</label>
+          <label class="check-opt" data-correct="1"><input type="checkbox"><span class="cbx"><svg><use href="#ic-check"/></svg></span> اتخاذ قرارات مبنيّة على بيانات جغرافية دقيقة</label>
+        </div>
+        <div class="nav-row" style="border:none;margin-top:14px;padding-top:0">
+          <span></span><div class="spacer"></div>
+          <button class="btn btn-clay btn-sm" id="msImportanceCheck" onclick="checkMultiSelect('msImportance', 3, ()=>enableNext('concept'))">تحقق من إجابتك</button>
+        </div>
+      </div>
+
+      <div class="nav-row"><span></span><div class="spacer"></div>
+        <button class="btn btn-primary" id="nextBtn-concept" disabled onclick="goStage('land')">التالي <svg class="icon-18"><use href="#ic-arrow-l"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ============ STAGE: LAND SURVEY ============ -->
+    <section class="stage" id="stage-land" data-stage="land">
+      <div class="stage-head"><div class="stage-badge"><svg><use href="#ic-tripod"/></svg></div>
+        <div><div class="stage-eyebrow">المحطة الثالثة</div><h3 class="stage-title">المَسْح الأرضي</h3></div></div>
+      <div class="card">
+        <div class="definition-box"><div class="tag">التعريف</div>
+          <p>يُعدّ المَسْح الأرضي من أقدم طرق جمع البيانات المتعلقة بظواهر سطح الأرض، عن طريق قياس المسافات والارتفاعات والزوايا، ورفع إحداثياتها ميدانيًا.</p>
+        </div>
+        <p>حيث بدأت هذه العملية باستخدام الأدوات التقليدية البسيطة، مثل شريط القياس، والبوصلة المنشورية، وغيرها من الأجهزة، ثم تطوّرت مع الثورة التكنولوجية لتستخدم الأجهزة الحديثة والرقمية، مثل محطة العمل المتكاملة.</p>
+      </div>
+
+      <div class="hotspot-scene" id="scene-land">
+        <div class="scene-illustration">
+          <div class="scene-item">
+            <div class="hotspot-dot" data-info="hs-land-1">١</div>
+            <svg class="item-icon"><use href="#ic-ruler"/></svg><span class="item-label">شريط القياس</span>
+          </div>
+          <div class="scene-item">
+            <div class="hotspot-dot" data-info="hs-land-2">٢</div>
+            <svg class="item-icon"><use href="#ic-compass"/></svg><span class="item-label">البوصلة المنشورية</span>
+          </div>
+          <div class="scene-item">
+            <div class="hotspot-dot" data-info="hs-land-3">٣</div>
+            <svg class="item-icon"><use href="#ic-tripod"/></svg><span class="item-label">محطة العمل المتكاملة</span>
+          </div>
+        </div>
+        <div class="hotspot-progress">استكشفتِ <b><span id="landHsCount">0</span>/٣</b> نقاط معلومات</div>
+      </div>
+
+      <div class="companion salem"><div class="cwrap"><svg class="charimg"><use href="#char-salem"/></svg></div>
+        <div class="txt"><b>سالم:</b> لاحظ التطوّر: من أدوات بسيطة إلى جهاز رقمي واحد يقيس كل شيء بدقة! رتّب هذا التطوّر في النشاط التالي.</div></div>
+
+      <div class="activity-box">
+        <span class="atag"><svg class="icon-16" style="color:#fff"><use href="#ic-arrow-l"/></svg> نشاط ترتيب</span>
+        <div class="activity-title">رتّب مراحل تطوّر أدوات المَسْح الأرضي</div>
+        <div class="activity-desc">استخدام الأسهم لترتيب المرحلتين حسب تسلسلهما الزمني الصحيح كما ورد في الدرس (الأقدم أولًا).</div>
+        <div class="order-list" id="orderLand">
+          <div class="order-item" data-key="modern"><span class="oi-num">١</span><span class="oi-text">الأجهزة الحديثة والرقمية، مثل محطة العمل المتكاملة</span>
+            <span class="oi-arrows"><button class="oi-btn" onclick="orderMove('orderLand',0,-1)"><svg><use href="#ic-arrow-r" style="transform:rotate(90deg)"/></svg></button><button class="oi-btn" onclick="orderMove('orderLand',0,1)"><svg><use href="#ic-arrow-l" style="transform:rotate(-90deg)"/></svg></button></span>
+          </div>
+          <div class="order-item" data-key="traditional"><span class="oi-num">٢</span><span class="oi-text">الأدوات التقليدية البسيطة، مثل شريط القياس والبوصلة المنشورية</span>
+            <span class="oi-arrows"><button class="oi-btn" onclick="orderMove('orderLand',1,-1)"><svg><use href="#ic-arrow-r" style="transform:rotate(90deg)"/></svg></button><button class="oi-btn" onclick="orderMove('orderLand',1,1)"><svg><use href="#ic-arrow-l" style="transform:rotate(-90deg)"/></svg></button></span>
+          </div>
+        </div>
+        <div class="nav-row" style="border:none;margin-top:14px;padding-top:0">
+          <span></span><div class="spacer"></div>
+          <button class="btn btn-clay btn-sm" onclick="checkOrder('orderLand',['traditional','modern'], ()=>enableNext('land'))">تحقق من الترتيب</button>
+        </div>
+      </div>
+
+      <div class="nav-row"><span></span><div class="spacer"></div>
+        <button class="btn btn-primary" id="nextBtn-land" disabled onclick="goStage('air')">التالي <svg class="icon-18"><use href="#ic-arrow-l"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ============ STAGE: AIR / SPACE SURVEY ============ -->
+    <section class="stage" id="stage-air" data-stage="air">
+      <div class="stage-head"><div class="stage-badge"><svg><use href="#ic-satellite"/></svg></div>
+        <div><div class="stage-eyebrow">المحطة الرابعة</div><h3 class="stage-title">المَسْح الجوّي والفضائي</h3></div></div>
+      <div class="card">
+        <div class="definition-box"><div class="tag">التعريف</div>
+          <p>يجمع المَسْح الجوّي والفضائي بيانات عن الظواهر الجغرافية دون الاتصال المباشر بها، بالاعتماد على الصور الجوية أو الصور الفضائية، عبر تقنية الاستشعار عن بُعد.</p>
+        </div>
+        <p>ومن الوسائل المستخدمة في المَسْح الجوّي والفضائي: بالون الطقس، والأقمار الاصطناعية، والطائرات المُسيَّرة (الدرونز).</p>
+        <div class="callout callout-oman" style="margin-top:16px">
+          <svg><use href="#ic-info"/></svg>
+          <div><h4>تعريف مرتبط: الاستشعار عن بُعد</h4><p>جمع بيانات عن الظواهر الجغرافية دون الاتصال المباشر، باستخدام مستشعرات مثبَّتة على منصّات أرضية أو جوية أو فضائية.</p></div>
+        </div>
+      </div>
+
+      <div class="hotspot-scene" id="scene-air">
+        <div class="scene-illustration">
+          <div class="scene-item"><div class="hotspot-dot" data-info="hs-air-1">١</div><svg class="item-icon"><use href="#ic-balloon"/></svg><span class="item-label">بالون الطقس</span></div>
+          <div class="scene-item"><div class="hotspot-dot" data-info="hs-air-2">٢</div><svg class="item-icon"><use href="#ic-satellite"/></svg><span class="item-label">الأقمار الاصطناعية</span></div>
+          <div class="scene-item"><div class="hotspot-dot" data-info="hs-air-3">٣</div><svg class="item-icon"><use href="#ic-drone"/></svg><span class="item-label">الطائرات المُسيَّرة</span></div>
+        </div>
+        <div class="hotspot-progress">استكشفتِ <b><span id="airHsCount">0</span>/٣</b> نقاط معلومات</div>
+      </div>
+
+      <div class="card">
+        <div class="callout callout-oman">
+          <svg><use href="#ic-checkcircle"/></svg>
+          <div><h4>منجَز عُماني</h4><p>أُطلقت منصّة (سرب) للطائرات المُسيَّرة؛ لتسهيل استخراج التراخيص للهُواة.</p>
+            <button class="why-toggle" onclick="toggleReveal(this)">علل: لماذا أُطلقت هذه المنصّة؟</button>
+            <div class="why-reveal">لتسهيل استخراج التراخيص للهُواة.</div>
+          </div>
+        </div>
+        <div class="callout callout-law"><svg><use href="#ic-shield"/></svg>
+          <div><h4>ومضة قانونية</h4><p>يُلزم القانون العُماني الأفراد بالحصول على ترخيص مُسبق من الجهات المختصّة عند استخدام الطائرات المُسيَّرة.</p></div></div>
+        <div class="callout callout-values"><svg><use href="#ic-heart"/></svg>
+          <div><h4>قِيَمنا</h4><p>نتحلّى بالمسؤولية واحترام خصوصية الآخرين عند استخدام الطائرات المُسيَّرة.</p></div></div>
+      </div>
+
+      <div class="quiz-box" id="quiz-air">
+        <span class="qtag"><svg class="icon-16"><use href="#ic-info"/></svg> علّل بالاختيار الصحيح</span>
+        <div class="quiz-q">ما السبب الذي جعل الطائرات المُسيَّرة الأداة الأكثر استخدامًا في جمع البيانات الجغرافية؟</div>
+        <div class="opt-list" data-correct="0">
+          <button class="opt" data-idx="0"><span class="bullet">أ</span> لسهولة إطلاقها وقلة تكلفتها وقدرتها العالية على جمع البيانات</button>
+          <button class="opt" data-idx="1"><span class="bullet">ب</span> لأنها بديل كامل ونهائي عن الأقمار الاصطناعية</button>
+          <button class="opt" data-idx="2"><span class="bullet">ج</span> لأنها لا تحتاج إلى أي ترخيص لاستخدامها</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="nav-row"><span></span><div class="spacer"></div>
+        <button class="btn btn-primary" id="nextBtn-air" disabled onclick="goStage('compare')">التالي <svg class="icon-18"><use href="#ic-arrow-l"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ============ STAGE: COMPARISON TABLE ============ -->
+    <section class="stage" id="stage-compare" data-stage="compare">
+      <div class="stage-head"><div class="stage-badge"><svg><use href="#ic-radar"/></svg></div>
+        <div><div class="stage-eyebrow">المحطة الخامسة</div><h3 class="stage-title">قارن: الجدول الشامل</h3></div></div>
+
+      <div class="card">
+        <p>يلخّص الجدول التالي أوجه المقارنة الكاملة بين المَسْح الأرضي والمَسْح الجوّي والفضائي كما وردت في الدرس:</p>
+        <div class="compare-wrap">
+          <table class="compare-table">
+            <thead><tr><th>وجه المقارنة</th><th>المَسْح الأرضي</th><th>المَسْح الجوّي والفضائي</th></tr></thead>
+            <tbody>
+              <tr><td>التعريف</td><td>من أقدم طرق جمع البيانات المتعلقة بظواهر سطح الأرض، عن طريق قياس المسافات والارتفاعات والزوايا، ورفع إحداثياتها ميدانيًا.</td><td>جمع بيانات عن الظواهر الجغرافية دون الاتصال المباشر بها، بالاعتماد على الصور الجوية أو الصور الفضائية، عبر تقنية الاستشعار عن بُعد.</td></tr>
+              <tr><td>الأدوات والوسائل المستخدمة</td><td>أدوات تقليدية: شريط القياس والبوصلة المنشورية. أجهزة حديثة ورقمية: محطة العمل المتكاملة.</td><td>بالون الطقس / الأقمار الاصطناعية / الطائرات المُسيَّرة (الدرونز).</td></tr>
+              <tr><td>طريقة جمع البيانات</td><td>ميدانية مباشرة، عبر التواجد في الموقع واستخدام أدوات القياس والهندسة المساحية على الأرض.</td><td>عن بُعد (الاستشعار عن بُعد)، باستخدام التصوير الجوّي والفضائي.</td></tr>
+              <tr><td>نطاق التغطية والسرعة</td><td>يُغطّي مساحات ضيقة أو محدودة نسبيًا، ويتطلّب وقتًا وجهدًا أكبر في العمل الميداني المباشر.</td><td>قادر على تغطية مساحات شاسعة وواسعة جدًا، بدقّة عالية وسرعة في جمع البيانات.</td></tr>
+              <tr><td>المرونة والتطبيقات الحديثة</td><td>تطوّر من الأدوات البسيطة إلى استخدام الأجهزة الرقمية الحديثة، مثل محطة العمل المتكاملة.</td><td>التطوّر التقني الملحوظ: أصبحت الطائرات المُسيَّرة الأكثر استخدامًا؛ لسهولة إطلاقها، وقلّة تكلفتها، وقدرتها على جمع البيانات الجغرافية.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="activity-box" id="activity-tools">
+        <span class="atag"><svg class="icon-16" style="color:#fff"><use href="#ic-radar"/></svg> نشاط سحب وإفلات</span>
+        <div class="activity-title">صنّف الأدوات التالية حسب ما يناسبها</div>
+        <div class="activity-desc">( البالون – شريط القياس – البوصلة المنشورية – الأقمار الاصطناعية – الطائرات المُسيَّرة – محطة العمل المتكاملة )</div>
+        <div class="tray" id="tray-tools">
+          <div class="chip" draggable="true" data-cat="land">شريط القياس</div>
+          <div class="chip" draggable="true" data-cat="land">البوصلة المنشورية</div>
+          <div class="chip" draggable="true" data-cat="land">محطة العمل المتكاملة</div>
+          <div class="chip" draggable="true" data-cat="air">البالون</div>
+          <div class="chip" draggable="true" data-cat="air">الأقمار الاصطناعية</div>
+          <div class="chip" draggable="true" data-cat="air">الطائرات المُسيَّرة</div>
+        </div>
+        <div class="bins">
+          <div class="bin" data-cat="land"><h5><svg><use href="#ic-tripod"/></svg> أدوات المَسْح الأرضي</h5><div class="bin-drop"></div></div>
+          <div class="bin" data-cat="air"><h5><svg><use href="#ic-satellite"/></svg> أدوات المَسْح الجوّي والفضائي</h5><div class="bin-drop"></div></div>
+        </div>
+        <div class="activity-status"><span>صحيحة: <b><span id="toolsCorrectCount">0</span> / 6</b></span></div>
+      </div>
+
+      <div class="activity-box" id="activity-traits">
+        <span class="atag"><svg class="icon-16" style="color:#fff"><use href="#ic-list"/></svg> نشاط توزيع الخصائص</span>
+        <div class="activity-title">وزّع الخصائص التالية حسب ما يناسبها</div>
+        <div class="activity-desc">اسحب كل عبارة إلى نوع المَسْح الذي تصفه.</div>
+        <div class="tray" id="tray-traits">
+          <div class="chip" draggable="true" data-cat="land">أقدم طرق جمع البيانات</div>
+          <div class="chip" draggable="true" data-cat="land">تُستخدم لقياس المسافات والارتفاعات</div>
+          <div class="chip" draggable="true" data-cat="air">جمع بيانات دون الاتصال المباشر بالظاهرة</div>
+          <div class="chip" draggable="true" data-cat="air">تقنية الاستشعار عن بُعد</div>
+        </div>
+        <div class="bins">
+          <div class="bin" data-cat="land"><h5><svg><use href="#ic-tripod"/></svg> المَسْح الأرضي</h5><div class="bin-drop"></div></div>
+          <div class="bin" data-cat="air"><h5><svg><use href="#ic-satellite"/></svg> المَسْح الجوّي والفضائي</h5><div class="bin-drop"></div></div>
+        </div>
+        <div class="activity-status"><span>صحيحة: <b><span id="traitsCorrectCount">0</span> / 4</b></span></div>
+      </div>
+
+      <div class="card">
+        <div class="reveal-card" data-reveal><div class="reveal-q"><b>عدّد: ما مصادر البيانات الجغرافية؟</b><svg><use href="#ic-arrow-l" style="transform:rotate(90deg)"/></svg></div><div class="reveal-a">المَسْح الأرضي، والمَسْح الجوّي والفضائي.</div></div>
+        <div class="reveal-card" data-reveal><div class="reveal-q"><b>عدّد: الأدوات التقليدية للمَسْح الأرضي؟</b><svg><use href="#ic-arrow-l" style="transform:rotate(90deg)"/></svg></div><div class="reveal-a">شريط القياس، والبوصلة المنشورية.</div></div>
+        <div class="reveal-card" data-reveal><div class="reveal-q"><b>عدّد: الوسائل المستخدمة للمَسْح الجوّي والفضائي؟</b><svg><use href="#ic-arrow-l" style="transform:rotate(90deg)"/></svg></div><div class="reveal-a">بالون الطقس، والأقمار الاصطناعية، والطائرات المُسيَّرة.</div></div>
+      </div>
+
+      <div class="nav-row"><span></span><div class="spacer"></div>
+        <button class="btn btn-primary" id="nextBtn-compare" disabled onclick="goStage('ai')">التالي <svg class="icon-18"><use href="#ic-arrow-l"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ============ STAGE: AI ============ -->
+    <section class="stage" id="stage-ai" data-stage="ai">
+      <div class="stage-head"><div class="stage-badge"><svg><use href="#ic-chip"/></svg></div>
+        <div><div class="stage-eyebrow">المحطة السادسة</div><h3 class="stage-title">الذكاء الاصطناعي في جمع البيانات</h3></div></div>
+      <div class="card">
+        <p>يُعدّ الذكاء الاصطناعي من التقنيات الحديثة التي ساعدت على تطوير عمليات جمع البيانات، وتكمُن أهميته في الآتي:</p>
+        <div class="grid grid-3">
+          <div class="flip" data-flip><div class="flip-inner">
+            <div class="flip-face flip-front"><svg><use href="#ic-chip"/></svg><b>جمع كميات كبيرة</b><span class="hint">اضغط للمزيد</span></div>
+            <div class="flip-face flip-back">جمع كميات كبيرة من البيانات من مصادر مختلفة.</div>
+          </div></div>
+          <div class="flip" data-flip><div class="flip-inner">
+            <div class="flip-face flip-front"><svg><use href="#ic-satellite"/></svg><b>تحسين جودة الصور</b><span class="hint">اضغط للمزيد</span></div>
+            <div class="flip-face flip-back">تحسين جودة الصور الجوية والفضائية.</div>
+          </div></div>
+          <div class="flip" data-flip><div class="flip-inner">
+            <div class="flip-face flip-front"><svg><use href="#ic-radar"/></svg><b>سرعة التحديد</b><span class="hint">اضغط للمزيد</span></div>
+            <div class="flip-face flip-back">سرعة تحديد الظواهر الطبيعية والبشرية.</div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="activity-box">
+        <span class="atag"><svg class="icon-16" style="color:#fff"><use href="#ic-checkcircle"/></svg> اختيار متعدد الإجابات</span>
+        <div class="activity-title">اختر كل ما يمثّل أهمية الذكاء الاصطناعي في جمع البيانات الجغرافية</div>
+        <div class="check-list" id="msAI">
+          <label class="check-opt" data-correct="1"><input type="checkbox"><span class="cbx"><svg><use href="#ic-check"/></svg></span> جمع كميات كبيرة من البيانات من مصادر مختلفة</label>
+          <label class="check-opt" data-correct="1"><input type="checkbox"><span class="cbx"><svg><use href="#ic-check"/></svg></span> تحسين جودة الصور الجوية والفضائية</label>
+          <label class="check-opt" data-correct="1"><input type="checkbox"><span class="cbx"><svg><use href="#ic-check"/></svg></span> سرعة تحديد الظواهر الطبيعية والبشرية</label>
+          <label class="check-opt" data-correct="0"><input type="checkbox"><span class="cbx"><svg><use href="#ic-check"/></svg></span> إلغاء الحاجة إلى أي بيانات ميدانية نهائيًا</label>
+        </div>
+        <div class="nav-row" style="border:none;margin-top:14px;padding-top:0"><span></span><div class="spacer"></div>
+          <button class="btn btn-clay btn-sm" onclick="checkMultiSelect('msAI', 3, ()=>enableNext('ai'))">تحقق من إجابتك</button>
+        </div>
+      </div>
+
+      <div class="companion salem"><div class="cwrap"><svg class="charimg"><use href="#char-salem"/></svg></div>
+        <div class="txt"><b>سالم يسأل — سؤال للتفكير:</b> هل يمكن أن تحلّ أدوات الذكاء الاصطناعي محلّ عمل الإنسان في المسوحات الميدانية مستقبلًا؟ ولماذا؟</div></div>
+      <div class="card">
+        <div class="poll-row">
+          <button class="poll-chip" data-poll="نعم">نعم</button>
+          <button class="poll-chip" data-poll="لا">لا</button>
+          <button class="poll-chip" data-poll="ربما">ربما، جزئيًا</button>
+        </div>
+        <div class="poll-reveal" id="pollReveal"></div>
+      </div>
+
+      <div class="nav-row"><span></span><div class="spacer"></div>
+        <button class="btn btn-primary" id="nextBtn-ai" disabled onclick="goStage('oman')">التالي <svg class="icon-18"><use href="#ic-arrow-l"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ============ STAGE: OMAN & SPACE ============ -->
+    <section class="stage" id="stage-oman" data-stage="oman">
+      <div class="stage-head"><div class="stage-badge"><svg><use href="#ic-rocket"/></svg></div>
+        <div><div class="stage-eyebrow">المحطة السابعة</div><h3 class="stage-title">دور سلطنة عُمان في جمع البيانات الجغرافية عن كوكب الأرض</h3></div></div>
+
+      <div class="card">
+        <p>شهد العالم تطورًا كبيرًا في جمع البيانات عن كوكب الأرض بإطلاق سلسلة من الأقمار الاصطناعية لمراقبة الأرض من الفضاء، وقد واكبت سلطنة عُمان هذا التقدّم التقني بدخولها الفعلي في هذا المجال.</p>
+        <div class="reveal-card" data-reveal><div class="reveal-q"><b>كيف واكبت عُمان التقدّم التقني؟</b><svg><use href="#ic-arrow-l" style="transform:rotate(90deg)"/></svg></div>
+          <div class="reveal-a">عبر إطلاق أوّل قمر اصطناعي مُدعَّم بالذكاء الاصطناعي.</div></div>
+        <div class="reveal-card" data-reveal><div class="reveal-q"><b>ما اسم هذا القمر الاصطناعي؟</b><svg><use href="#ic-arrow-l" style="transform:rotate(90deg)"/></svg></div>
+          <div class="reveal-a">(OL-1)، ومُسجَّل رسميًا باسم سلطنة عُمان.</div></div>
+        <div class="reveal-card" data-reveal><div class="reveal-q"><b>ما اسم الجهة الرسمية لهذا العمل؟</b><svg><use href="#ic-arrow-l" style="transform:rotate(90deg)"/></svg></div>
+          <div class="reveal-a">الاتحاد الدولي للاتصالات.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="callout callout-oman">
+          <svg><use href="#ic-rocket"/></svg>
+          <div><h4>منجَز عُماني: برنامج الفضاء الوطني العُماني</h4>
+            <p>أُطلق برنامج الفضاء الوطني العُماني؛ بهدف تعزيز مكانة سلطنة عُمان كمركز إقليمي لتطبيقات الفضاء.</p>
+            <button class="why-toggle" onclick="toggleReveal(this)">علل: لماذا أُطلق هذا البرنامج؟</button>
+            <div class="why-reveal">بهدف تعزيز مكانة سلطنة عُمان كمركز إقليمي لتطبيقات الفضاء.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="activity-box">
+        <span class="atag"><svg class="icon-16" style="color:#fff"><use href="#ic-mappin"/></svg> نشاط مطابقة</span>
+        <div class="activity-title">طابق كل منجَز عُماني بوصفه الصحيح</div>
+        <div class="activity-desc">اضغط على المنجَز، ثم اضغط على الوصف المطابق له.</div>
+        <div class="match-cols">
+          <div id="matchTerms">
+            <div class="match-item term" data-pair="ol1">القمر العُماني OL-1</div>
+            <div class="match-item term" data-pair="space">برنامج الفضاء الوطني العُماني</div>
+            <div class="match-item term" data-pair="sarab">منصّة (سرب)</div>
+          </div>
+          <div id="matchDefs">
+            <div class="match-item def" data-pair="sarab">أُطلقت لتسهيل استخراج تراخيص الطائرات المُسيَّرة للهُواة.</div>
+            <div class="match-item def" data-pair="ol1">أوّل قمر اصطناعي عُماني مُدعَّم بالذكاء الاصطناعي، مُسجَّل رسميًا باسم سلطنة عُمان لدى الاتحاد الدولي للاتصالات.</div>
+            <div class="match-item def" data-pair="space">أُطلق بهدف تعزيز مكانة سلطنة عُمان كمركز إقليمي لتطبيقات الفضاء.</div>
+          </div>
+        </div>
+        <div class="activity-status"><span>مطابقات صحيحة: <b><span id="matchCorrectCount">0</span> / 3</b></span></div>
+      </div>
+
+      <div class="card">
+        <div class="activity-title" style="margin-bottom:4px">أكمل البطاقة التعريفية للقمر الاصطناعي العُماني</div>
+        <p style="color:var(--ink-soft);font-size:13.5px">اضغط على كل سؤال لتتحقق من إجابتك.</p>
+        <div class="reveal-card" data-reveal><div class="reveal-q"><b>الدولة التي أطلقت هذا القمر الاصطناعي؟</b><svg><use href="#ic-arrow-l" style="transform:rotate(90deg)"/></svg></div><div class="reveal-a">سلطنة عُمان.</div></div>
+        <div class="reveal-card" data-reveal><div class="reveal-q"><b>اسم القمر الاصطناعي؟</b><svg><use href="#ic-arrow-l" style="transform:rotate(90deg)"/></svg></div><div class="reveal-a">(OL-1).</div></div>
+        <div class="reveal-card" data-reveal><div class="reveal-q"><b>الجهة الرسمية التي سُجِّل بها القمر؟</b><svg><use href="#ic-arrow-l" style="transform:rotate(90deg)"/></svg></div><div class="reveal-a">الاتحاد الدولي للاتصالات.</div></div>
+      </div>
+
+      <div class="nav-row"><span></span><div class="spacer"></div>
+        <button class="btn btn-clay" id="nextBtn-oman" disabled onclick="goStage('challenge')">إلى التحدي الختامي <svg class="icon-18"><use href="#ic-arrow-l"/></svg></button>
+      </div>
+    </section>
+
+    <!-- ============ STAGE: CHALLENGE ============ -->
+    <section class="stage" id="stage-challenge" data-stage="challenge">
+      <div class="stage-head"><div class="stage-badge" style="background:linear-gradient(145deg,var(--clay),var(--clay-deep))"><svg><use href="#ic-trophy"/></svg></div>
+        <div><div class="stage-eyebrow">المحطة الثامنة</div><h3 class="stage-title">التحدي الختامي</h3></div></div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div style="display:flex;gap:6px" id="challengeDots"></div>
+          <div style="font-family:Cairo;font-weight:800;color:var(--teal-deep);font-size:13.5px;display:flex;align-items:center;gap:6px"><svg class="icon-18"><use href="#ic-star"/></svg><span id="challengeScoreLabel">0 / 8</span></div>
+        </div>
+        <div id="challengeStage"></div>
+      </div>
+    </section>
+
+    <!-- ============ STAGE: RESULT ============ -->
+    <section class="stage" id="stage-result" data-stage="result">
+      <div class="result-wrap">
+        <div class="badge-ring" id="badgeRing" style="--pct:0"><div class="badge-inner"><svg><use href="#ic-trophy"/></svg><b id="finalScoreText">0/0</b><span>النقاط الكلية</span></div></div>
+        <h2 id="resultTitle" style="font-size:23px;margin-bottom:8px">أحسنت صنعًا!</h2>
+        <p id="resultSub" style="color:var(--ink-soft);max-width:480px;margin:0 auto 20px">أنهيتِ رحلة جمع البيانات الجغرافية بنجاح.</p>
+        <svg style="width:120px;margin:0 auto 10px" class="charimg"><use href="#char-mia"/></svg>
+        <div class="result-actions">
+          <button class="btn btn-ghost" onclick="goStage('overview')"><svg class="icon-18"><use href="#ic-home"/></svg> عودة لخريطة الرحلة</button>
+          <button class="btn btn-primary" onclick="restartChallenge()">إعادة التحدي الختامي</button>
+        </div>
+        <div class="next-lesson-card">
+          <div class="nl-icon"><svg><use href="#ic-mappin"/></svg></div>
+          <div><div class="stage-eyebrow">الدرس القادم</div><h4 style="font-size:15.5px;margin-bottom:6px">معالجة البيانات الجغرافية</h4>
+            <p style="margin:0;font-size:13px;color:var(--ink-soft)">بعد أن جمعنا البيانات، ماذا نفعل بها؟ في الدرس القادم نتعرّف على مراحل معالجة البيانات الجغرافية.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="foot-credit">إعداد: أ. عهود العبرية — معلمة الدراسات الاجتماعية — مدرسة وادي غول للتعليم الأساسي (٥-٩)</div>
+    </main>
+  </div>
+</div>
+
+<!-- mascot corner -->
+<div id="mascot-corner"><svg><use href="#mascot-drone"/></svg></div>
+
+<!-- modal -->
+<div id="modal-overlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()"><svg><use href="#ic-x"/></svg></button>
+    <div class="m-icon"><svg id="modalIcon"><use href="#ic-info"/></svg></div>
+    <h4 id="modalTitle"></h4>
+    <p id="modalText"></p>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const STAGES = [
+  {id:'goals',    name:'أهداف الدرس',                 icon:'ic-compass'},
+  {id:'concept',  name:'مفهوم البيانات الجغرافية',      icon:'ic-mappin'},
+  {id:'land',     name:'المَسْح الأرضي',                icon:'ic-tripod'},
+  {id:'air',      name:'المَسْح الجوّي والفضائي',        icon:'ic-satellite'},
+  {id:'compare',  name:'قارن: الجدول الشامل',          icon:'ic-radar'},
+  {id:'ai',       name:'الذكاء الاصطناعي',              icon:'ic-chip'},
+  {id:'oman',     name:'عُمان والفضاء',                 icon:'ic-rocket'},
+  {id:'challenge',name:'التحدي الختامي',                icon:'ic-trophy'},
+];
+const TOTAL_POSSIBLE = 3+1+2+1+6+4+3+1+8; /* concept ms(3)+air quiz(1)+land order(2)+... computed live instead */
+const state = { visited:new Set(), score:0 };
+
+const HOTSPOT_INFO = {
+  'hs-land-1':{title:'شريط القياس والبوصلة المنشورية', text:'من الأدوات التقليدية البسيطة التي بدأ بها المَسْح الأرضي، إلى جانب أدوات أخرى مشابهة.', icon:'ic-ruler'},
+  'hs-land-2':{title:'شريط القياس والبوصلة المنشورية', text:'من الأدوات التقليدية البسيطة التي بدأ بها المَسْح الأرضي، إلى جانب أدوات أخرى مشابهة.', icon:'ic-compass'},
+  'hs-land-3':{title:'محطة العمل المتكاملة', text:'من الأجهزة الحديثة والرقمية التي تطوّر إليها المَسْح الأرضي مع الثورة التكنولوجية.', icon:'ic-tripod'},
+  'hs-air-1':{title:'بالون الطقس', text:'من الوسائل المستخدمة في المَسْح الجوّي والفضائي لجمع بيانات الظواهر الجغرافية عن بُعد.', icon:'ic-balloon'},
+  'hs-air-2':{title:'الأقمار الاصطناعية', text:'من الوسائل المستخدمة في المَسْح الجوّي والفضائي؛ وقد أطلقت سلطنة عُمان قمرها الاصطناعي (OL-1) المُدعَّم بالذكاء الاصطناعي.', icon:'ic-satellite'},
+  'hs-air-3':{title:'الطائرات المُسيَّرة (الدرونز)', text:'أصبحت الأداة الأكثر استخدامًا في جمع البيانات الجغرافية؛ لسهولة إطلاقها، وقلّة تكلفتها، وقدرتها العالية على جمع البيانات.', icon:'ic-drone'},
+};
+
+/* ============================================================
+   NAV: home <-> app shell
+   ============================================================ */
+function enterApp(){
+  document.getElementById('home').classList.remove('active');
+  document.getElementById('app-shell').classList.add('active');
+  renderSidebar(); renderMapStations();
+  goStage('overview', true);
+}
+function goHome(){
+  document.getElementById('app-shell').classList.remove('active');
+  document.getElementById('home').classList.add('active');
+}
+function toggleSidebar(open){
+  document.getElementById('sidebar').classList.toggle('open', open);
+  document.getElementById('sidebar-scrim').classList.toggle('show', open);
+}
+
+function goStage(id, silent){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+  document.getElementById('stage-'+id).classList.add('active');
+  if(id!=='overview') state.visited.add(id);
+  window.scrollTo({top:0,behavior:'smooth'});
+  toggleSidebar(false);
+  renderSidebar(); renderMapStations();
+  if(id==='challenge') startChallengeIfNeeded();
+}
+
+function addPoints(n){
+  state.score += n;
+  document.getElementById('sidePoints').textContent = state.score;
+  document.getElementById('sidePointsMobile').textContent = state.score;
+}
+
+function enableNext(stageId){
+  const btn = document.getElementById('nextBtn-'+stageId);
+  if(btn) btn.disabled = false;
+}
+
+/* ============================================================
+   SIDEBAR + MAP RENDER
+   ============================================================ */
+function renderSidebar(){
+  const nav = document.getElementById('sideNav');
+  nav.innerHTML='';
+  const overviewBtn = document.createElement('button');
+  overviewBtn.className = 'side-item' + (isActive('overview')?' current':'');
+  overviewBtn.innerHTML = `<span class="si-icon"><svg><use href="#ic-mappin"/></svg></span> خريطة الرحلة`;
+  overviewBtn.onclick = ()=>goStage('overview');
+  nav.appendChild(overviewBtn);
+
+  STAGES.forEach(st=>{
+    const done = state.visited.has(st.id);
+    const btn = document.createElement('button');
+    btn.className = 'side-item' + (done?' done':'') + (isActive(st.id)?' current':'');
+    btn.innerHTML = `<span class="si-icon"><svg><use href="#${st.icon}"/></svg></span> ${st.name} ${done?'<svg class="si-tick"><use href="#ic-checkcircle"/></svg>':''}`;
+    btn.onclick = ()=>goStage(st.id);
+    nav.appendChild(btn);
+  });
+  const doneCount = STAGES.filter(s=>state.visited.has(s.id)).length;
+  document.getElementById('sideProgressFill').style.width = (doneCount/STAGES.length*100)+'%';
+}
+
+function isActive(id){
+  const el = document.getElementById('stage-'+id);
+  return el && el.classList.contains('active');
+}
+
+function renderMapStations(){
+  const wrap = document.getElementById('mapStations');
+  if(!wrap) return;
+  wrap.innerHTML='';
+  STAGES.forEach((st,i)=>{
+    const done = state.visited.has(st.id);
+    const node = document.createElement('div');
+    node.className = 'map-node'+(done?' done':'');
+    node.innerHTML = `
+      <div class="mn-icon"><svg class="icon-22"><use href="#${st.icon}"/></svg></div>
+      <div class="mn-text"><div class="mn-num">المحطة ${toArabicNum(i+1)}</div><div class="mn-name">${st.name}</div></div>
+      <div class="mn-status">${done?'<svg><use href="#ic-checkcircle"/></svg>':''}</div>
+    `;
+    node.onclick = ()=>goStage(st.id);
+    wrap.appendChild(node);
+  });
+}
+
+function toArabicNum(n){
+  const map={0:'٠',1:'١',2:'٢',3:'٣',4:'٤',5:'٥',6:'٦',7:'٧',8:'٨',9:'٩'};
+  return String(n).split('').map(c=>map[c]!==undefined?map[c]:c).join('');
+}
+
+/* ============================================================
+   CHARACTER TALK / REACTIONS
+   ============================================================ */
+function reactCorrect(evt){
+  const m = document.getElementById('mascot-corner');
+  m.classList.remove('oops'); void m.offsetWidth; m.classList.add('cheer');
+  setTimeout(()=>m.classList.remove('cheer'), 700);
+  burstAt(evt);
+}
+function reactWrong(evt){
+  const m = document.getElementById('mascot-corner');
+  m.classList.remove('cheer'); void m.offsetWidth; m.classList.add('oops');
+  setTimeout(()=>m.classList.remove('oops'), 600);
+}
+function burstAt(evt){
+  if(!evt) return;
+  const x = evt.clientX || (evt.target ? evt.target.getBoundingClientRect().left+20 : 100);
+  const y = evt.clientY || (evt.target ? evt.target.getBoundingClientRect().top+10 : 100);
+  const wrap = document.createElement('div');
+  wrap.className='burst'; wrap.style.left=x+'px'; wrap.style.top=y+'px';
+  for(let i=0;i<8;i++){
+    const s = document.createElement('span');
+    const ang = (i/8)*2*Math.PI;
+    s.style.setProperty('--bx', Math.cos(ang)*46+'px');
+    s.style.setProperty('--by', Math.sin(ang)*46+'px');
+    s.style.background = i%2? 'var(--gold)':'var(--teal-soft)';
+    wrap.appendChild(s);
+  }
+  document.body.appendChild(wrap);
+  setTimeout(()=>wrap.remove(), 750);
+}
+
+/* ============================================================
+   FLIP CARDS
+   ============================================================ */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click', ()=>f.classList.toggle('flipped')));
+
+/* ============================================================
+   REVEAL CARDS (click to reveal)
+   ============================================================ */
+document.querySelectorAll('[data-reveal]').forEach(card=>{
+  card.querySelector('.reveal-q').addEventListener('click', ()=> card.classList.toggle('open'));
+});
+function toggleReveal(btn){
+  const r = btn.nextElementSibling;
+  r.classList.toggle('show');
+}
+
+/* ============================================================
+   GOALS CHECKLIST
+   ============================================================ */
+document.querySelectorAll('#goalsList .goal-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    item.classList.toggle('done');
+    const allDone = [...document.querySelectorAll('#goalsList .goal-item')].every(i=>i.classList.contains('done'));
+    document.getElementById('goalsNextBtn').disabled = !allDone;
+  });
+});
+
+/* ============================================================
+   MCQ ENGINE
+   ============================================================ */
+function initQuiz(boxId, onCorrect){
+  const box = document.getElementById(boxId);
+  const list = box.querySelector('.opt-list');
+  const correctIdx = parseInt(list.dataset.correct,10);
+  const feedback = box.querySelector('.feedback');
+  let answered = false;
+  list.querySelectorAll('.opt').forEach(opt=>{
+    opt.addEventListener('click', (e)=>{
+      if(answered) return; answered = true;
+      const idx = parseInt(opt.dataset.idx,10);
+      list.querySelectorAll('.opt').forEach(o=>o.disabled=true);
+      if(idx===correctIdx){
+        opt.classList.add('correct');
+        feedback.classList.add('show','ok');
+        feedback.innerHTML = '<svg><use href="#ic-checkcircle"/></svg><span>إجابة صحيحة! أحسنت.</span>';
+        addPoints(1); reactCorrect(e);
+        if(onCorrect) onCorrect();
+      }else{
+        opt.classList.add('wrong');
+        list.querySelector(`[data-idx="${correctIdx}"]`).classList.add('correct');
+        feedback.classList.add('show','bad');
+        feedback.innerHTML = '<svg><use href="#ic-x"/></svg><span>ليست الإجابة الصحيحة، لاحظ الإجابة الصحيحة أعلاه.</span>';
+        reactWrong(e);
+      }
+    });
+  });
+}
+initQuiz('quiz-air', ()=>enableNext('air'));
+
+/* ============================================================
+   MULTISELECT ENGINE
+   ============================================================ */
+document.querySelectorAll('.check-opt').forEach(opt=>{
+  opt.addEventListener('click', (e)=>{
+    if(opt.classList.contains('locked')) return;
+    const box = opt.querySelector('input');
+    box.checked = !box.checked;
+    opt.classList.toggle('checked', box.checked);
+  });
+});
+function checkMultiSelect(listId, points, onAllRight){
+  const list = document.getElementById(listId);
+  const opts = [...list.querySelectorAll('.check-opt')];
+  let allRight = true;
+  opts.forEach(o=>{
+    const checked = o.querySelector('input').checked;
+    const shouldBe = o.dataset.correct === '1';
+    o.classList.add('locked');
+    if(shouldBe && checked) o.classList.add('right');
+    else if(!shouldBe && checked){ o.classList.add('wrongsel'); allRight=false; }
+    else if(shouldBe && !checked){ o.classList.add('missed'); allRight=false; }
+  });
+  if(allRight){ addPoints(points); reactCorrect(); }
+  else { reactWrong(); }
+  if(onAllRight && allRight) onAllRight();
+  return allRight;
+}
+
+/* ============================================================
+   ORDERING ENGINE
+   ============================================================ */
+function orderMove(listId, idx, dir){
+  const list = document.getElementById(listId);
+  const items = [...list.children];
+  const newIdx = idx+dir;
+  if(newIdx<0 || newIdx>=items.length) return;
+  if(dir<0) list.insertBefore(items[idx], items[newIdx]);
+  else list.insertBefore(items[newIdx], items[idx]);
+  [...list.children].forEach((el,i)=> el.querySelector('.oi-num').textContent = toArabicNum(i+1));
+}
+function checkOrder(listId, correctOrder, onDone){
+  const list = document.getElementById(listId);
+  const items = [...list.children];
+  let ok = true;
+  items.forEach((el,i)=>{
+    const good = el.dataset.key === correctOrder[i];
+    el.classList.remove('correct','wrong');
+    el.classList.add(good?'correct':'wrong');
+    if(!good) ok=false;
+  });
+  if(ok){ addPoints(2); reactCorrect(); if(onDone) onDone(); }
+  else { reactWrong(); }
+}
+
+/* ============================================================
+   DRAG & DROP (pointer-based)
+   ============================================================ */
+function setupDragDrop(trayId, binSelector, onAllCorrect, onEachCorrect){
+  const tray = document.getElementById(trayId);
+  let correctCount = 0;
+  const total = tray.querySelectorAll('.chip').length;
+  const statusEl = tray.parentElement.querySelector('.activity-status b');
+
+  tray.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('pointerdown', (e)=>{
+      if(chip.classList.contains('placed')) return;
+      e.preventDefault();
+      const rect = chip.getBoundingClientRect();
+      const ghost = chip.cloneNode(true);
+      ghost.classList.add('ghost');
+      ghost.style.width = rect.width+'px'; ghost.style.left=rect.left+'px'; ghost.style.top=rect.top+'px';
+      document.body.appendChild(ghost);
+      chip.style.opacity='.35';
+
+      function move(ev){
+        const cx = ev.touches?ev.touches[0].clientX:ev.clientX;
+        const cy = ev.touches?ev.touches[0].clientY:ev.clientY;
+        ghost.style.left=(cx-rect.width/2)+'px'; ghost.style.top=(cy-rect.height/2)+'px';
+        document.querySelectorAll(binSelector+' .bin').forEach(b=>b.classList.remove('hover'));
+        const under = document.elementFromPoint(cx,cy);
+        const binEl = under? under.closest(binSelector+' .bin') : null;
+        if(binEl) binEl.classList.add('hover');
+      }
+      function up(ev){
+        document.removeEventListener('pointermove', move);
+        document.removeEventListener('pointerup', up);
+        const under = document.elementFromPoint(ev.clientX, ev.clientY);
+        const binEl = under? under.closest(binSelector+' .bin') : null;
+        document.querySelectorAll(binSelector+' .bin').forEach(b=>b.classList.remove('hover'));
+        ghost.remove(); chip.style.opacity='1';
+        if(binEl){
+          const drop = binEl.querySelector('.bin-drop');
+          const clone = document.createElement('div');
+          clone.className='chip'; clone.textContent = chip.textContent;
+          if(binEl.dataset.cat === chip.dataset.cat){
+            clone.classList.add('correct-chip'); chip.classList.add('placed');
+            drop.appendChild(clone); correctCount++;
+            addPoints(1); reactCorrect(ev);
+            if(statusEl) statusEl.textContent = correctCount+' / '+total;
+            if(onEachCorrect) onEachCorrect(chip.dataset.idx);
+            if(correctCount===total && onAllCorrect) onAllCorrect();
+          }else{
+            clone.classList.add('wrong-chip'); drop.appendChild(clone);
+            reactWrong(ev);
+            setTimeout(()=>clone.remove(), 700);
+          }
+        }
+      }
+      document.addEventListener('pointermove', move);
+      document.addEventListener('pointerup', up);
+    });
+  });
+}
+setupDragDrop('tray-tools', '#activity-tools', ()=>enableNext('compare'));
+setupDragDrop('tray-traits', '#activity-traits', ()=>{});
+
+/* ============================================================
+   MATCH PAIRS ENGINE
+   ============================================================ */
+function setupMatching(termsId, defsId, counterId, onAllMatched){
+  const terms = document.getElementById(termsId);
+  const defs = document.getElementById(defsId);
+  let selectedTerm = null, matched = 0;
+  const total = terms.querySelectorAll('.match-item').length;
+  terms.querySelectorAll('.match-item').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      if(t.classList.contains('matched')) return;
+      terms.querySelectorAll('.match-item').forEach(x=>x.classList.remove('selected'));
+      t.classList.add('selected'); selectedTerm = t;
+    });
+  });
+  defs.querySelectorAll('.match-item').forEach(d=>{
+    d.addEventListener('click', (e)=>{
+      if(d.classList.contains('matched') || !selectedTerm) return;
+      if(d.dataset.pair === selectedTerm.dataset.pair){
+        d.classList.add('matched'); d.classList.remove('selected');
+        selectedTerm.classList.add('matched'); selectedTerm.classList.remove('selected');
+        matched++; addPoints(1); reactCorrect(e);
+        document.getElementById(counterId).textContent = matched;
+        selectedTerm = null;
+        if(matched===total && onAllMatched) onAllMatched();
+      }else{
+        d.classList.add('wrong-flash'); selectedTerm.classList.add('wrong-flash'); reactWrong(e);
+        setTimeout(()=>{ d.classList.remove('wrong-flash'); selectedTerm && selectedTerm.classList.remove('wrong-flash','selected'); selectedTerm=null; },400);
+      }
+    });
+  });
+}
+setupMatching('matchTerms','matchDefs','matchCorrectCount', ()=>enableNext('oman'));
+
+/* ============================================================
+   POLL
+   ============================================================ */
+const pollTexts = {
+  'نعم':'رأي جميل! الذكاء الاصطناعي يتطوّر بسرعة، لكن يبقى الإنسان مهمًا في اتخاذ القرار النهائي وفهم السياق الميداني.',
+  'لا':'ملاحظة مهمة! الميدان يحتاج أحيانًا لحكم بشري ودقة محلية قد لا تُدركها الآلة وحدها.',
+  'ربما':'إجابة متوازنة! غالبًا سيتشارك الإنسان والذكاء الاصطناعي المهمة: الآلة تجمع وتُحلّل بسرعة، والإنسان يُشرف ويقرر.'
+};
+document.querySelectorAll('.poll-chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.poll-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    const reveal = document.getElementById('pollReveal');
+    reveal.textContent = pollTexts[chip.dataset.poll];
+    reveal.classList.add('show');
+  });
+});
+
+/* ============================================================
+   HOTSPOTS + MODAL
+   ============================================================ */
+let hsSeen = new Set();
+document.querySelectorAll('.hotspot-dot').forEach(dot=>{
+  dot.addEventListener('click', ()=>{
+    const key = dot.dataset.info;
+    const info = HOTSPOT_INFO[key];
+    openModal(info.title, info.text, info.icon);
+    if(!hsSeen.has(key)){
+      hsSeen.add(key);
+      addPoints(1);
+      if(key.startsWith('hs-land')) document.getElementById('landHsCount').textContent = countSeen('hs-land');
+      if(key.startsWith('hs-air')) document.getElementById('airHsCount').textContent = countSeen('hs-air');
+    }
+  });
+});
+function countSeen(prefix){
+  let c=0; hsSeen.forEach(k=>{ if(k.startsWith(prefix)) c++; }); return Math.min(c,3);
+}
+function openModal(title, text, icon){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalText').textContent = text;
+  document.getElementById('modalIcon').innerHTML = `<use href="#${icon||'ic-info'}"/>`;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+/* ============================================================
+   FINAL CHALLENGE
+   ============================================================ */
+const CHALLENGE = [
+  {q:'ما الأساس الذي تقوم عليه الخرائط والتطبيقات المكانية الذكية؟', opts:['البيانات التاريخية','البيانات الجغرافية','البيانات الاقتصادية'], correct:1},
+  {q:'ما من أقدم طرائق جمع البيانات المتعلقة بظواهر سطح الأرض؟', opts:['الاستشعار عن بُعد','المَسْح الأرضي','الصور الجوية'], correct:1},
+  {q:'ما اسم أوّل قمر اصطناعي مُدعَّم بالذكاء الاصطناعي أطلقته سلطنة عُمان؟', opts:['بيكسل','(OL-1)','sat-1'], correct:1},
+  {q:'أيّ خاصية تتميّز بها أدوات المَسْح الأرضي؟', opts:['استخدام الأقمار الاصطناعية','استخدام البوصلة المنشورية','التصوير الجوّي الفضائي'], correct:1},
+  {q:'ما الأداة التي تمثّل التطوّر الحديث في أدوات المَسْح الأرضي؟', opts:['بالون الطقس','القمر الاصطناعي','محطة العمل المتكاملة'], correct:2},
+  {q:'أيّ خاصية تتعلّق بالمَسْح الجوّي والفضائي في جمع البيانات الجغرافية؟', opts:['الاعتماد على شريط القياس اليدوي','جمع البيانات دون الاتصال المباشر بالظاهرة','استخدام البوصلة المنشورية'], correct:1},
+  {q:'ما اسم الدولة العربية التي أطلقت منصّة (سرب) للطائرات المُسيَّرة؟', opts:['مصر','سلطنة عُمان','المغرب'], correct:1},
+  {q:'ما المركز الذي يسعى إليه برنامج الفضاء الوطني العُماني لتعزيز مكانة سلطنة عُمان؟', opts:['عالمي','خليجي','إقليمي'], correct:2},
+];
+let challengeIdx = 0, challengeStarted = false;
+
+function startChallengeIfNeeded(){
+  if(challengeStarted) return;
+  challengeStarted = true;
+  challengeIdx = 0;
+  renderChallengeQ();
+}
+function renderChallengeDots(){
+  const wrap = document.getElementById('challengeDots'); wrap.innerHTML='';
+  CHALLENGE.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText='width:24px;height:6px;border-radius:4px;background:'+(c._answered?'var(--gold)':(i===challengeIdx?'var(--teal)':'var(--sand-2)'))+';border:1px solid var(--line)';
+    wrap.appendChild(d);
+  });
+  const earned = CHALLENGE.reduce((s,c)=>s+(c._earned||0),0);
+  document.getElementById('challengeScoreLabel').textContent = toArabicNum(earned)+' / '+toArabicNum(CHALLENGE.length);
+}
+function renderChallengeQ(){
+  const stage = document.getElementById('challengeStage');
+  const q = CHALLENGE[challengeIdx];
+  renderChallengeDots();
+  stage.innerHTML = `
+    <div class="quiz-q">${toArabicNum(challengeIdx+1)}. ${q.q}</div>
+    <div class="opt-list" id="chOpts">
+      ${q.opts.map((o,i)=>`<button class="opt" data-idx="${i}" ${q._answered?'disabled':''}><span class="bullet">${['أ','ب','ج'][i]}</span> ${o}</button>`).join('')}
+    </div>
+    <div class="feedback ${q._answered?'show '+(q._earned?'ok':'bad'):''}">
+      ${q._answered ? (q._earned?'<svg><use href="#ic-checkcircle"/></svg><span>إجابة صحيحة!</span>':'<svg><use href="#ic-x"/></svg><span>غير صحيحة، الإجابة الصحيحة موضّحة أعلاه.</span>') : ''}
+    </div>
+    <div class="nav-row" style="border:none;margin-top:18px;padding-top:0">
+      <button class="btn btn-ghost btn-sm" ${challengeIdx===0?'disabled':''} onclick="challengePrev()"><svg class="icon-16"><use href="#ic-arrow-r"/></svg> السابق</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary btn-sm" ${q._answered?'':'disabled'} onclick="challengeNext()">${challengeIdx===CHALLENGE.length-1?'عرض النتيجة':'التالي'} <svg class="icon-16"><use href="#ic-arrow-l"/></svg></button>
+    </div>`;
+  if(q._answered){
+    stage.querySelectorAll('.opt').forEach(o=>{
+      const i=parseInt(o.dataset.idx,10);
+      if(i===q.correct) o.classList.add('correct');
+      else if(i===q._chosen) o.classList.add('wrong');
+    });
+  }else{
+    stage.querySelectorAll('.opt').forEach(o=>{
+      o.addEventListener('click', (e)=>{
+        const idx = parseInt(o.dataset.idx,10);
+        q._answered = true; q._chosen = idx; q._earned = idx===q.correct?1:0;
+        if(q._earned){ addPoints(1); reactCorrect(e); } else { reactWrong(e); }
+        renderChallengeQ();
+      });
+    });
+  }
+}
+function challengeNext(){
+  if(challengeIdx < CHALLENGE.length-1){ challengeIdx++; renderChallengeQ(); }
+  else { showResult(); }
+}
+function challengePrev(){ if(challengeIdx>0){ challengeIdx--; renderChallengeQ(); } }
+
+function showResult(){
+  const grandTotal = computeGrandTotal();
+  const pct = Math.round((state.score/grandTotal)*100);
+  document.getElementById('finalScoreText').textContent = state.score+'/'+grandTotal;
+  document.getElementById('badgeRing').style.setProperty('--pct', Math.min(pct,100));
+  let title, sub;
+  if(pct>=90){ title='قائد البيانات الجغرافية!'; sub='إتقان رائع لجميع محطات الرحلة. أنت جاهز تمامًا للدرس القادم: معالجة البيانات الجغرافية.'; }
+  else if(pct>=70){ title='مستكشف ماهر!'; sub='أداء ممتاز! يمكنكِ العودة لأي محطة من القائمة الجانبية لمراجعة ما فاتكِ.'; }
+  else { title='بداية واعدة!'; sub='خطوة أولى جيدة. عودي لأي محطة من القائمة الجانبية للمراجعة، ثم أعيدي التحدي.'; }
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+  goStage('result');
+}
+function computeGrandTotal(){
+  /* fixed maximum obtainable across the whole experience */
+  return 3 /*concept multiselect*/ + 1 /*air quiz*/ + 3 /*land hotspots*/ + 2 /*land order*/
+       + 3 /*air hotspots*/ + 6 /*tools drag*/ + 4 /*traits drag*/ + 3 /*ai multiselect*/
+       + 3 /*oman matching*/ + CHALLENGE.length /*final quiz*/;
+}
+function restartChallenge(){
+  CHALLENGE.forEach(q=>{ q._answered=false; q._earned=0; q._chosen=null; });
+  challengeStarted=false;
+  goStage('challenge');
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.body.addEventListener('click', ()=>{}, {passive:true}); /* placeholder for future global listeners */
+</script>
+</body>
+</html>
